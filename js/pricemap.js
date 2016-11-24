@@ -1,13 +1,18 @@
 function pricemap() {
-    var pricemapData = generate(50000);
+    var pricemapData = generate(70000);
     var leveledData = levels(pricemapData);
     var diagram = voronoi(leveledData);
 }
 
 function voronoi(leveledData) {
     var t0 = performance.now();
-    var voronoi = new Voronoi();
-    var diagram = voronoi.compute(sites, bbox);
+    var voronoi = d3.voronoi().extent([[minLng, maxLng], [maxLat, minLat]]);
+    var sites = [];
+    leveledData.forEach(function(item){
+        sites.push({x: item.lng, y:item.lat});
+    });
+    var bbox = {xl: minLng, xr: maxLng, yt: maxLat, yb: minLat};
+    var diagram = voronoi(sites);
     var t1 = performance.now();
     console.log("voronoi diagram generation took " + (t1 - t0) + " milliseconds.")
 }
@@ -17,16 +22,16 @@ function levels(pricemapData) {
     var t0 = performance.now();
     grid(pricemapData);
     var t1 = performance.now();
-    console.log("leveling data took " + (t1 - t0) + " milliseconds.")
+    console.log("leveling data took " + (t1 - t0) + " milliseconds.");
     return result;
 
     function grid(pricemapData) {
-        var grid = new Array();
+        var grid = [];
         pricemapData.forEach(function(item) {
             var latIndex = Math.floor((item.lat - minLat) / windowSize);
             var latSlot = grid[latIndex];
             if (typeof latSlot == "undefined") {
-                latSlot = new Array();
+                latSlot = [];
                 grid[latIndex] = latSlot;
             }
             var lngIndex = Math.floor((item.lng - minLng) / windowSize);
@@ -44,7 +49,6 @@ function levels(pricemapData) {
         function averageValue(one) {
             var sum = one.value;
             var count = 1;
-            var latSlot = grid[latIndex];
             for (i = -1; i < 2; i++) {
                 var latIndex = Math.floor((one.lat - minLat) / windowSize);
                 var latSlot = grid[latIndex + i];
@@ -89,10 +93,10 @@ function levels(pricemapData) {
 }
 
 var windowSize = 0.06;
-var minLat = 49.0756565;
-var maxLat = 50.5550039;
-var minLng = 13.305744;
-var maxLng = 16.1995283;
+var minLat = 490756.565;
+var maxLat = 505550.039;
+var minLng = 133057.44;
+var maxLng = 161995.283;
 
 function generate(count) {
     function randomLat() {
@@ -113,6 +117,6 @@ function generate(count) {
         result.push({lat: randomLat(), lng: randomLng(), value: randomValue()});
     }
     var t1 = performance.now();
-    console.log("generating random data took " + (t1 - t0) + " milliseconds.")
+    console.log("generating random data took " + (t1 - t0) + " milliseconds.");
     return result;
 }
