@@ -1,4 +1,6 @@
-package com.averagemap.core;
+package com.averagemap.core.generator;
+
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.Collection;
@@ -7,14 +9,13 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
-import com.averagemap.core.generator.AverageCalculator;
-import com.averagemap.core.generator.PointWithValue;
+import com.averagemap.core.average.SimpleSquareAverageCalculator;
+import com.averagemap.core.coordinates.PointWithValue;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class AverageCalculatorTest {
+public class MapGeneratorTest {
 
     private Set<PointWithValue> pointWithValues;
 
@@ -23,12 +24,13 @@ public class AverageCalculatorTest {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("FLAT_SELL_output.txt").getFile());
         ObjectMapper objectMapper = new ObjectMapper();
-        pointWithValues = objectMapper.readValue(file, new TypeReference<HashSet<PointWithValue>>() {});
+        pointWithValues = objectMapper.readValue(file, new TypeReference<HashSet<PointWithValue>>() {
+        });
     }
 
     @Test
     public void test1() throws Exception {
-        Collection<PointWithValue> averages = new AverageCalculator().calculateAverages(pointWithValues);
+        Collection<PointWithValue> averages = new SimpleSquareAverageCalculator().calculateAverages(pointWithValues);
         assertEquals(averages.size(), pointWithValues.size());
 
     }
