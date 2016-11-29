@@ -7,7 +7,7 @@ import com.averagemap.core.coordinates.LatLng;
 import com.averagemap.core.utils.CoordinatesUtils;
 import com.averagemap.core.coordinates.MercatorPosition;
 
-public class LatLngUtilsTest {
+public class CoordinatesUtilsTest {
 
     @Test
     public void test1() {
