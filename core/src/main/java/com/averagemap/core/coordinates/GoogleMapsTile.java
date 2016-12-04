@@ -1,13 +1,13 @@
 package com.averagemap.core.coordinates;
 
-public class GoogleMapsPosition extends MercatorPosition {
+public class GoogleMapsTile extends MercatorPosition {
 
     private int zoom;
 
-    public GoogleMapsPosition() {
+    public GoogleMapsTile() {
     }
 
-    public GoogleMapsPosition(int x, int y, int zoom) {
+    public GoogleMapsTile(int x, int y, int zoom) {
         super(x, y);
         this.zoom = zoom;
     }

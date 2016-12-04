@@ -1,6 +1,6 @@
 package com.averagemap.core.coordinates;
 
-public class LatLng {
+public class LatLng implements Position2D {
 
     private double lat;
 

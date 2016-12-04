@@ -12,11 +12,6 @@ import com.averagemap.core.duplicate.SimpleDuplicateRemover;
 public class MapGenerator {
 
     public void generateMap(Collection<PointWithValue> points) {
-        DuplicateRemover duplicateRemover = new AverageResultDuplicateRemover();
-        AverageCalculator averageCalculator = new SimpleSquareAverageCalculator();
-
-        Collection<PointWithValue> averages = averageCalculator.calculateAverages(points);
-        Collection<PointWithValue> uniquePoints = duplicateRemover.removeDuplicates(averages);
     }
 
 }
