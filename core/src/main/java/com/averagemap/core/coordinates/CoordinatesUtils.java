@@ -45,7 +45,7 @@ public class CoordinatesUtils {
         double bottom = Double.MAX_VALUE;
         for (LatLng latLng : positions) {
             double lat = latLng.getLat();
-            if (lat > top ){
+            if (lat > top) {
                 top = lat;
             } else if (lat < bottom) {
                 bottom = lat;
