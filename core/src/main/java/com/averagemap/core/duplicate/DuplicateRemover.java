@@ -2,10 +2,10 @@ package com.averagemap.core.duplicate;
 
 import java.util.Collection;
 
-import com.averagemap.core.coordinates.PointWithValue;
+import com.averagemap.core.coordinates.Point;
 
 public interface DuplicateRemover {
 
-    Collection<PointWithValue> removeDuplicates(Collection<PointWithValue> points);
+    Collection<Point> removeDuplicates(Collection<Point> points);
 
 }

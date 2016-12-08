@@ -1,32 +1,22 @@
 package com.averagemap.core.coordinates;
 
-public class MercatorPosition implements Position2D {
+public class MercatorPosition implements Position2D<Integer> {
 
-    private int x;
+    private final int x;
 
-    private int y;
-
-    public MercatorPosition() {
-    }
+    private final int y;
 
     public MercatorPosition(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    public int getX() {
+    public Integer getX() {
         return x;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
+    public Integer getY() {
         return y;
     }
 
-    public void setY(int y) {
-        this.y = y;
-    }
 }

@@ -7,14 +7,14 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.averagemap.core.coordinates.PointWithValue;
+import com.averagemap.core.coordinates.Point;
 
 public class SimpleDuplicateRemover implements DuplicateRemover {
 
     @Override
-    public Collection<PointWithValue> removeDuplicates(Collection<PointWithValue> points) {
+    public Collection<Point> removeDuplicates(Collection<Point> points) {
         return points.stream()
-                .filter(distinctByKey(PointWithValue::getLatLng))
+                .filter(distinctByKey(Point::getLatLng))
                 .collect(Collectors.toList());
     }
 

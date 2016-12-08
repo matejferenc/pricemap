@@ -1,7 +1,6 @@
 package com.averagemap.core;
 
 import com.averagemap.core.coordinates.*;
-import org.junit.Before;
 import org.junit.Test;
 
 import static com.averagemap.core.coordinates.CoordinatesUtils.getEncompassingArea;
@@ -27,28 +26,28 @@ public class CoordinatesUtilsTest {
     @Test
     public void pointIsInCorrectTileWithZoom8() {
         int zoom = 8;
-        GoogleMapsTile googleMapsTile = latLngToTile(QUADRIO, zoom);
-        assertEquals(138, googleMapsTile.getX());
-        assertEquals(86, googleMapsTile.getY());
-        assertEquals(8, googleMapsTile.getZoom());
+        GoogleMapsPosition googleMapsPosition = latLngToTile(QUADRIO, zoom);
+        assertEquals(138, googleMapsPosition.getX());
+        assertEquals(86, googleMapsPosition.getY());
+        assertEquals(8, googleMapsPosition.getZoom());
     }
 
     @Test
     public void pointIsInCorrectTileWithZoom10() {
         int zoom = 10;
-        GoogleMapsTile googleMapsTile = latLngToTile(QUADRIO, zoom);
-        assertEquals(553, googleMapsTile.getX());
-        assertEquals(346, googleMapsTile.getY());
-        assertEquals(10, googleMapsTile.getZoom());
+        GoogleMapsPosition googleMapsPosition = latLngToTile(QUADRIO, zoom);
+        assertEquals(553, googleMapsPosition.getX());
+        assertEquals(346, googleMapsPosition.getY());
+        assertEquals(10, googleMapsPosition.getZoom());
     }
 
     @Test
     public void pointIsInCorrectTileWithZoom14() {
         int zoom = 14;
-        GoogleMapsTile googleMapsTile = latLngToTile(QUADRIO, zoom);
-        assertEquals(8848, googleMapsTile.getX());
-        assertEquals(5550, googleMapsTile.getY());
-        assertEquals(14, googleMapsTile.getZoom());
+        GoogleMapsPosition googleMapsPosition = latLngToTile(QUADRIO, zoom);
+        assertEquals(8848, googleMapsPosition.getX());
+        assertEquals(5550, googleMapsPosition.getY());
+        assertEquals(14, googleMapsPosition.getZoom());
     }
 
     @Test
