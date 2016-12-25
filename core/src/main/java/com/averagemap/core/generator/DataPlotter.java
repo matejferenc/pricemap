@@ -1,13 +1,14 @@
 package com.averagemap.core.generator;
 
-import com.averagemap.core.coordinates.Area;
 import com.averagemap.core.coordinates.LatLng;
 import com.averagemap.core.coordinates.Point;
+import com.averagemap.core.images.ImageTilesForEveryZoom;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface DataPlotter {
 
-    void plot(Collection<Point<LatLng>> points);
+    ImageTilesForEveryZoom plot(Collection<Point<LatLng>> points, List<LatLng> outline);
 
 }

@@ -15,15 +15,15 @@ public class Area<T extends Position2D> {
         return topLeft;
     }
 
-    public void setTopLeft(T topLeft) {
-        this.topLeft = topLeft;
-    }
-
     public T getBottomRight() {
         return bottomRight;
     }
 
-    public void setBottomRight(T bottomRight) {
-        this.bottomRight = bottomRight;
+    public int getWidth() {
+        return bottomRight.getX().intValue() - topLeft.getX().intValue() + 1;
+    }
+
+    public int getHeight() {
+        return bottomRight.getY().intValue() - topLeft.getY().intValue() + 1;
     }
 }

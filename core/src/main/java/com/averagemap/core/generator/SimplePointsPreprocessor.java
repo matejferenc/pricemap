@@ -3,6 +3,7 @@ package com.averagemap.core.generator;
 import java.util.Collection;
 
 import com.averagemap.core.average.AverageCalculator;
+import com.averagemap.core.coordinates.LatLng;
 import com.averagemap.core.coordinates.Point;
 import com.averagemap.core.duplicate.DuplicateRemover;
 
@@ -18,7 +19,7 @@ public class SimplePointsPreprocessor implements PointsPreprocessor {
     }
 
     @Override
-    public Collection<Point> preprocess(Collection<Point> points) {
+    public Collection<Point<LatLng>> preprocess(Collection<Point<LatLng>> points) {
         return averageCalculator.calculateAverages(duplicateRemover.removeDuplicates(points));
     }
 }

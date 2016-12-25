@@ -1,11 +1,16 @@
 package com.averagemap.core.coordinates;
 
-public class GoogleMapsPosition extends MercatorPosition {
+public class GoogleMapsPosition implements Position2D<Integer> {
 
     private final int zoom;
 
+    private final int x;
+
+    private final int y;
+
     public GoogleMapsPosition(int x, int y, int zoom) {
-        super(x, y);
+        this.x = x;
+        this.y = y;
         this.zoom = zoom;
     }
 
@@ -13,4 +18,34 @@ public class GoogleMapsPosition extends MercatorPosition {
         return zoom;
     }
 
+    @Override
+    public Integer getX() {
+        return x;
+    }
+
+    @Override
+    public Integer getY() {
+        return y;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        GoogleMapsPosition that = (GoogleMapsPosition) o;
+
+        if (zoom != that.zoom) return false;
+        if (x != that.x) return false;
+        return y == that.y;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = zoom;
+        result = 31 * result + x;
+        result = 31 * result + y;
+        return result;
+    }
 }

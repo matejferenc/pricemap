@@ -53,7 +53,7 @@
     function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
             zoom: 10,
-            center: {lat: 41.850, lng: -87.650}
+            center: {lat: 49.831339, lng: 15.4394205}
         });
 
         // Insert this overlay map type as the first overlay map type at
@@ -61,6 +61,19 @@
         // their parent base map.
         map.overlayMapTypes.insertAt(
                 0, new CoordMapType(new google.maps.Size(256, 256)));
+
+        var imageMapType = new google.maps.ImageMapType({
+          getTileUrl: function(coord, zoom) {
+            if (zoom < 0 || zoom > 13) {
+              return null;
+            }
+
+            return ['img/', zoom, '/', coord.x, '/', coord.y, '.png'].join('');
+          },
+          tileSize: new google.maps.Size(256, 256)
+        });
+
+        map.overlayMapTypes.push(imageMapType);
     }
 </script>
 <script async defer

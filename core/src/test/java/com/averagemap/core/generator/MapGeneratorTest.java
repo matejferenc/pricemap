@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.averagemap.core.coordinates.LatLng;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,7 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MapGeneratorTest {
 
-    private Set<Point> points;
+    private Set<Point<LatLng>> points;
 
     @Before
     public void before() throws Exception {
@@ -30,7 +31,7 @@ public class MapGeneratorTest {
 
     @Test
     public void test1() throws Exception {
-        Collection<Point> averages = new SimpleSquareAverageCalculator().calculateAverages(points);
+        Collection<Point<LatLng>> averages = new SimpleSquareAverageCalculator().calculateAverages(points);
         assertEquals(averages.size(), points.size());
 
     }

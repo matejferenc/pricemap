@@ -17,8 +17,8 @@ public class AverageResultDuplicateRemoverTest {
     @Test
     public void test1() {
         AverageResultDuplicateRemover averageResultDuplicateRemover = new AverageResultDuplicateRemover();
-        Collection<Point> points = createPoints();
-        Collection<Point> withoutDuplicates = averageResultDuplicateRemover.removeDuplicates(points);
+        Collection<Point<LatLng>> points = createPoints();
+        Collection<Point<LatLng>> withoutDuplicates = averageResultDuplicateRemover.removeDuplicates(points);
         assertEquals(3, withoutDuplicates.size());
         assertAverages(withoutDuplicates);
         withoutDuplicates = averageResultDuplicateRemover.removeDuplicates(points);
@@ -26,22 +26,22 @@ public class AverageResultDuplicateRemoverTest {
         assertAverages(withoutDuplicates);
     }
 
-    private void assertAverages(Collection<Point> withoutDuplicates) {
+    private void assertAverages(Collection<Point<LatLng>> withoutDuplicates) {
         Map<LatLng, Double> values = new HashMap<>();
-        withoutDuplicates.forEach(pointWithValue -> values.put(pointWithValue.getLatLng(), pointWithValue.getValue()));
+        withoutDuplicates.forEach(pointWithValue -> values.put(pointWithValue.getPosition(), pointWithValue.getValue()));
         assertEquals(values.get(new LatLng(50, 14)), 100.5, 0.0000000001);
         assertEquals(values.get(new LatLng(49, 14)), 102.0, 0.0000000001);
         assertEquals(values.get(new LatLng(49, 13)), 88.0, 0.0000000001);
     }
 
-    private Collection<Point> createPoints() {
-        ArrayList<Point> points = new ArrayList<>();
-        points.add(new Point(50, 14, 100));
-        points.add(new Point(50, 14, 101));
-        points.add(new Point(49, 14, 99));
-        points.add(new Point(49, 14, 102));
-        points.add(new Point(49, 14, 105));
-        points.add(new Point(49, 13, 98));
+    private Collection<Point<LatLng>> createPoints() {
+        ArrayList<Point<LatLng>> points = new ArrayList<>();
+        points.add(new Point<>(new LatLng(50, 14), 100));
+        points.add(new Point<>(new LatLng(50, 14), 101));
+        points.add(new Point<>(new LatLng(49, 14), 99));
+        points.add(new Point<>(new LatLng(49, 14), 102));
+        points.add(new Point<>(new LatLng(49, 14), 105));
+        points.add(new Point<>(new LatLng(49, 13), 98));
         return points;
     }
 
