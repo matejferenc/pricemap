@@ -1,25 +1,34 @@
 package com.averagemap.core.generator;
 
 import com.averagemap.core.CoordinatesUtilsTest;
+import com.averagemap.core.coordinates.DataPoint;
+import com.averagemap.core.coordinates.GoogleMapsPosition;
 import com.averagemap.core.coordinates.LatLng;
 import com.averagemap.core.coordinates.Point;
+import com.averagemap.core.duplicate.AverageResultDuplicateRemover;
+import com.averagemap.core.duplicate.DuplicateRemover;
 import com.averagemap.core.images.ImageTilesForEveryZoom;
 import com.averagemap.core.images.ImageTilesForOneZoom;
 import com.averagemap.core.images.ImageTilesSaver;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import static java.util.stream.Collectors.toSet;
+
 public class SimpleDataPlotterTest {
 
     @Test
-    public void test1() {
-        ZoomSpecificDataPlotter zoomSpecificDataPlotter = new SimpleZoomSpecificDataPlotter();
+    public void test1() throws IOException {
+        DuplicateRemover<Integer, GoogleMapsPosition> duplicateRemover = new AverageResultDuplicateRemover<>();
+        ZoomSpecificDataPlotter zoomSpecificDataPlotter = new SimpleZoomSpecificDataPlotter(duplicateRemover);
         SimpleDataPlotter simpleDataPlotter = new SimpleDataPlotter(zoomSpecificDataPlotter);
         List<LatLng> outline = loadCzechRepublicBorder();
-        ImageTilesForEveryZoom imageTilesForEveryZoom = simpleDataPlotter.plot(randomPoints(), outline);
+        ImageTilesForEveryZoom imageTilesForEveryZoom = simpleDataPlotter.plot(loadData(), outline);
         new ImageTilesSaver().saveTiles(imageTilesForEveryZoom, new File("C:\\dev\\java\\tmp"));
         List<ImageTilesForOneZoom> oneZoomTilesList = imageTilesForEveryZoom.getOneZoomTilesList();
     }
@@ -30,6 +39,19 @@ public class SimpleDataPlotterTest {
         points.add(new Point<>(CoordinatesUtilsTest.HODONIN, 101));
         points.add(new Point<>(CoordinatesUtilsTest.QUADRIO, 102));
         return points;
+    }
+
+    private Set<Point<LatLng>> loadData() throws IOException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("FLAT_SELL_output.txt").getFile());
+        ObjectMapper objectMapper = new ObjectMapper();
+        Set<DataPoint> points = objectMapper.readValue(file, new TypeReference<HashSet<DataPoint>>() {
+        });
+        return points.stream()
+                .filter(point -> point.getValue() > 1)
+                .filter(point -> point.getValue() < 150000)
+                .map(point -> new Point<>(new LatLng(point.getLat(), point.getLng()), point.getValue()))
+                .collect(toSet());
     }
 
     private List<LatLng> loadCzechRepublicBorder() {

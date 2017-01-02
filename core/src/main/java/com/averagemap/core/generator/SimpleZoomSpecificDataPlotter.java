@@ -2,8 +2,12 @@ package com.averagemap.core.generator;
 
 import com.averagemap.core.coordinates.*;
 import com.averagemap.core.coordinates.Point;
+import com.averagemap.core.duplicate.DuplicateRemover;
 import com.averagemap.core.images.ImageTile;
 import com.averagemap.core.images.ImageTilesForOneZoom;
+import delaunay_triangulation.Delaunay_Triangulation;
+import delaunay_triangulation.Point_dt;
+import delaunay_triangulation.Triangle_dt;
 
 import java.awt.*;
 import java.awt.geom.GeneralPath;
@@ -12,9 +16,13 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.averagemap.core.coordinates.CoordinatesUtils.TILE_SIZE;
+import static com.averagemap.core.coordinates.CoordinatesUtils.getEncompassingArea;
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.util.stream.Collectors.toList;
 
 public class SimpleZoomSpecificDataPlotter implements ZoomSpecificDataPlotter {
@@ -23,30 +31,32 @@ public class SimpleZoomSpecificDataPlotter implements ZoomSpecificDataPlotter {
     private Graphics2D graphics2d;
     private BufferedImage image;
 
+    private final DuplicateRemover<Integer, GoogleMapsPosition> duplicateRemover;
+    private Double min;
+    private Double max;
+
+    public SimpleZoomSpecificDataPlotter(DuplicateRemover<Integer, GoogleMapsPosition> duplicateRemover) {
+        this.duplicateRemover = duplicateRemover;
+    }
+
     @Override
     public ImageTilesForOneZoom plot(Collection<Point<GoogleMapsPosition>> points, List<GoogleMapsPosition> outline, int zoom) {
-        Area<GoogleMapsTile> encompassingArea = calculateEncompassingArea(outline);
+        Area<GoogleMapsTile> encompassingArea = getEncompassingArea(outline);
         calculateTopLeftPositionOfImage(encompassingArea);
         prepareForDrawing(encompassingArea);
         cropImage(outline);
-        drawWholeImage(points, image);
+        Collection<Point<GoogleMapsPosition>> uniquePoints = duplicateRemover.removeDuplicates(points);
+        drawWholeImage(uniquePoints, image);
         Collection<ImageTile> tiles = cutImageIntoTiles(image, encompassingArea, zoom);
         return new ImageTilesForOneZoom(tiles, zoom);
     }
 
     private void prepareForDrawing(Area<GoogleMapsTile> encompassingArea) {
-        image = new BufferedImage(encompassingArea.getWidth() * TILE_SIZE, encompassingArea.getHeight() * TILE_SIZE, BufferedImage.TYPE_INT_ARGB);
+        image = new BufferedImage(encompassingArea.getWidth() * TILE_SIZE, encompassingArea.getHeight() * TILE_SIZE, TYPE_INT_ARGB);
         graphics2d = image.createGraphics();
 //        graphics2d.setComposite(AlphaComposite.Clear);
         graphics2d.setPaint(new Color(0f, 0f, 0f, 0f));
         graphics2d.fillRect(0, 0, image.getWidth(), image.getHeight());
-    }
-
-    private Area<GoogleMapsTile> calculateEncompassingArea(List<GoogleMapsPosition> points) {
-        List<GoogleMapsPosition> positions = points.stream()
-//                .map(Point::getPosition)
-                .collect(toList());
-        return CoordinatesUtils.getEncompassingArea(positions);
     }
 
     private void calculateTopLeftPositionOfImage(Area<GoogleMapsTile> encompassingArea) {
@@ -98,7 +108,64 @@ public class SimpleZoomSpecificDataPlotter implements ZoomSpecificDataPlotter {
     }
 
     private void drawWholeImage(Collection<Point<GoogleMapsPosition>> points, BufferedImage image) {
-        graphics2d.setColor(Color.BLUE);
-        graphics2d.fill(new Rectangle2D.Float(0, 0, image.getWidth(), image.getHeight()));
+        countMinAndMaxValue(points);
+        Delaunay_Triangulation dt = new Delaunay_Triangulation();
+        points.stream()
+                .map(point -> {
+                    Position2D<Integer> position2D = transformToImagePosition(point.getPosition());
+                    return new Point_dt(position2D.getX(), position2D.getY(), point.getValue());
+                })
+                .forEach(dt::insertPoint);
+        Iterator<Triangle_dt> iterator = dt.trianglesIterator();
+        while (iterator.hasNext()) {
+            Triangle_dt triangle = iterator.next();
+            if (!triangle.isHalfplane()) {
+                triangle.p1().getValue();
+                Color color1 = calculateColor(triangle.p1().getValue());
+                Color color2 = calculateColor(triangle.p2().getValue());
+                Color color3 = calculateColor(triangle.p3().getValue());
+                Color transparent = new Color(0, 0, 0, 0);
+                Polygon polygon = new Polygon(
+                        new int[]{(int) triangle.p1().x(), (int) triangle.p2().x(), (int) triangle.p3().x()},
+                        new int[]{(int) triangle.p1().y(), (int) triangle.p2().y(), (int) triangle.p3().y()},
+                        3);
+                GradientPaint gradient1 = new GradientPaint(
+                        (float) triangle.p1().x(), (float) triangle.p1().y(), color1,
+                        (float) triangle.p2().x(), (float) triangle.p2().y(), transparent);
+                GradientPaint gradient2 = new GradientPaint(
+                        (float) triangle.p2().x(), (float) triangle.p2().y(), color2,
+                        (float) triangle.p3().x(), (float) triangle.p3().y(), transparent);
+                GradientPaint gradient3 = new GradientPaint(
+                        (float) triangle.p3().x(), (float) triangle.p3().y(), color3,
+                        (float) triangle.p1().x(), (float) triangle.p1().y(), transparent);
+                graphics2d.setPaint(gradient1);
+                graphics2d.fill(polygon);
+                graphics2d.setPaint(gradient2);
+                graphics2d.fill(polygon);
+                graphics2d.setPaint(gradient3);
+                graphics2d.fill(polygon);
+            }
+        }
+//        graphics2d.setColor(Color.BLUE);
+//        graphics2d.fill(new Rectangle2D.Float(0, 0, image.getWidth(), image.getHeight()));
+    }
+
+    private void countMinAndMaxValue(Collection<Point<GoogleMapsPosition>> points) {
+        min = points.stream()
+                .map(Point::getValue)
+                .min(Double::compare)
+                .orElseThrow(() -> new IllegalArgumentException("wtf"));
+        max = points.stream()
+                .map(Point::getValue)
+                .max(Double::compare)
+                .orElseThrow(() -> new IllegalArgumentException("wtf"));
+    }
+
+    private Color calculateColor(double value) {
+        float percent = (float) ((value - min) / (max - min));
+        int r = (int) (255 * percent);
+        int g = (int) (255 * (1 - percent));
+        int b = 0;
+        return new Color(r, g, b);
     }
 }

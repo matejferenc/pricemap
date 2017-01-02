@@ -31,7 +31,7 @@ public class ImageTilesSaver {
         try {
             ImageIO.write(image, "PNG", imageFile);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalStateException("cannot write image to file: " + imageFile.getAbsolutePath(), e);
         }
     }
 

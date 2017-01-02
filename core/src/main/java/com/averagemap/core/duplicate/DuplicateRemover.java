@@ -1,12 +1,12 @@
 package com.averagemap.core.duplicate;
 
+import com.averagemap.core.coordinates.Point;
+import com.averagemap.core.coordinates.Position2D;
+
 import java.util.Collection;
 
-import com.averagemap.core.coordinates.LatLng;
-import com.averagemap.core.coordinates.Point;
+public interface DuplicateRemover<N extends Number, T extends Position2D<N>> {
 
-public interface DuplicateRemover {
-
-    Collection<Point<LatLng>> removeDuplicates(Collection<Point<LatLng>> points);
+    Collection<Point<T>> removeDuplicates(Collection<Point<T>> points);
 
 }

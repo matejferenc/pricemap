@@ -16,7 +16,7 @@ public class AverageResultDuplicateRemoverTest {
 
     @Test
     public void test1() {
-        AverageResultDuplicateRemover averageResultDuplicateRemover = new AverageResultDuplicateRemover();
+        AverageResultDuplicateRemover<Double, LatLng> averageResultDuplicateRemover = new AverageResultDuplicateRemover<>();
         Collection<Point<LatLng>> points = createPoints();
         Collection<Point<LatLng>> withoutDuplicates = averageResultDuplicateRemover.removeDuplicates(points);
         assertEquals(3, withoutDuplicates.size());

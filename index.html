@@ -70,7 +70,8 @@
 
             return ['img/', zoom, '/', coord.x, '/', coord.y, '.png'].join('');
           },
-          tileSize: new google.maps.Size(256, 256)
+          tileSize: new google.maps.Size(256, 256),
+          opacity: 0.99
         });
 
         map.overlayMapTypes.push(imageMapType);
