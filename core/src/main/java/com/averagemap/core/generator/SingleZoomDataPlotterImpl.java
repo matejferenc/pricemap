@@ -11,7 +11,7 @@ import java.awt.*;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
-import java.util.Collection;
+import java.util.*;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -22,7 +22,6 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
 
     private GoogleMapsPosition topLeft;
-    private Graphics2D graphics2d;
     private BufferedImage image;
 
     private ImageTileSaver imageTileSaver;
@@ -36,8 +35,6 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
     @Override
     public void plot(Collection<Point<GoogleMapsPosition>> points, List<GoogleMapsPosition> outline, int zoom) {
         TilesArea tilesArea = getEncompassingArea(outline);
-        calculateTopLeftPositionOfImage(tilesArea);
-        prepareForDrawing(tilesArea);
         Pair<Double, Double> minAndMaxValue = countMinAndMaxValue(points);
         GeneralPath outlinePath = createOutline(outline);
         tilesArea.stream()
@@ -47,7 +44,6 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
                     ImageTile imageTile = new ImageTile(tile, image);
                     imageTileSaver.saveTile(imageTile);
                 });
-        drawWholeImage(points, image);
     }
 
     private BufferedImage drawImage(GoogleMapsTile tile, Collection<Point<GoogleMapsPosition>> uniquePoints, GeneralPath outlinePath, Pair<Double, Double> minAndMaxValue) {
@@ -75,15 +71,15 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
     }
 
     private void drawPixel(int i, int j, BufferedImage image, Collection<Point<GoogleMapsPosition>> points, GoogleMapsPosition pixelPosition, Pair<Double, Double> minAndMaxValue) {
-        double averageValue = knn(points, pixelPosition);
+        double averageValue = knn2(points, pixelPosition);
         Color color = calculateColor(averageValue, minAndMaxValue);
         image.setRGB(i, j, color.getRGB());
     }
 
-    private double knn(Collection<Point<GoogleMapsPosition>> uniquePoints, GoogleMapsPosition pixelPosition) {
+    private double knn(Collection<Point<GoogleMapsPosition>> points, GoogleMapsPosition pixelPosition) {
         final double[] minDistance = {Double.MAX_VALUE};
         final double[] value = new double[1];
-        uniquePoints.stream()
+        points.stream()
                 .parallel()
                 .forEach(point -> {
                     double distance = this.distance.distance(point.getPosition(), pixelPosition);
@@ -95,19 +91,27 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
         return value[0];
     }
 
-    private void prepareForDrawing(TilesArea encompassingArea) {
-        image = new BufferedImage(encompassingArea.getWidth() * TILE_SIZE, encompassingArea.getHeight() * TILE_SIZE, TYPE_INT_ARGB);
-        graphics2d = image.createGraphics();
-        graphics2d.setPaint(new Color(0f, 0f, 0f, 0f));
-        graphics2d.fillRect(0, 0, image.getWidth(), image.getHeight());
-    }
-
-    private void calculateTopLeftPositionOfImage(TilesArea encompassingArea) {
-        GoogleMapsTile encompassingAreaTopLeft = encompassingArea.getTopLeft();
-        this.topLeft = new GoogleMapsPosition(
-                encompassingAreaTopLeft.getX() * TILE_SIZE,
-                encompassingAreaTopLeft.getY() * TILE_SIZE,
-                encompassingAreaTopLeft.getZoom());
+    private double knn2(Collection<Point<GoogleMapsPosition>> points, GoogleMapsPosition pixelPosition) {
+        PriorityQueue<Pair<Double, Double>> closestPoints = new PriorityQueue<>((Pair<Double, Double> o1, Pair<Double, Double> o2) -> {
+            return o2.getKey().compareTo(o1.getKey());
+        });
+        final int k = 7;
+        points.stream()
+                .forEach(point -> {
+                    double distance = this.distance.distance(point.getPosition(), pixelPosition);
+                    if (closestPoints.size() >= k) {
+                        if (closestPoints.peek().getKey() > distance) {
+                            closestPoints.poll();
+                            closestPoints.add(new Pair<>(distance, point.getValue()));
+                        }
+                    } else {
+                        closestPoints.add(new Pair<>(distance, point.getValue()));
+                    }
+                });
+        return closestPoints.stream()
+                .mapToDouble(Pair::getValue)
+                .average()
+                .orElseThrow(() -> new IllegalStateException("not enough elements"));
     }
 
     private GeneralPath createOutline(List<GoogleMapsPosition> outline) {
@@ -121,13 +125,6 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
 
     private Position2D<Integer> transformToImagePosition(GoogleMapsPosition position, GoogleMapsPosition topLeft) {
         return new GoogleMapsPosition(position.getX() - topLeft.getX(), position.getY() - topLeft.getY(), position.getZoom());
-    }
-
-    private void drawWholeImage(Collection<Point<GoogleMapsPosition>> points, BufferedImage image) {
-        points.stream()
-                .map(point -> {
-                    return transformToImagePosition(point.getPosition(), topLeft);
-                });
     }
 
     private Pair<Double, Double> countMinAndMaxValue(Collection<Point<GoogleMapsPosition>> points) {

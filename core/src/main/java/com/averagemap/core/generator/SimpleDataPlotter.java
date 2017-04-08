@@ -34,7 +34,6 @@ public class SimpleDataPlotter implements DataPlotter {
     public void plot(Collection<Point<LatLng>> points, List<LatLng> outline) {
         ImageTilesForEveryZoom imageTilesForEveryZoom = new ImageTilesForEveryZoom();
         IntStream.rangeClosed(0, maxZoom)
-//                .parallel()
                 .forEach(zoom -> {
                     long start = System.currentTimeMillis();
                     generateImageTilesForOneZoom(points, outline, zoom);
