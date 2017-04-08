@@ -18,10 +18,10 @@ public class AverageResultDuplicateRemoverTest {
     public void test1() {
         AverageResultDuplicateRemover<Double, LatLng> averageResultDuplicateRemover = new AverageResultDuplicateRemover<>();
         Collection<Point<LatLng>> points = createPoints();
-        Collection<Point<LatLng>> withoutDuplicates = averageResultDuplicateRemover.removeDuplicates(points);
+        Collection<Point<LatLng>> withoutDuplicates = averageResultDuplicateRemover.removeDuplicatePoints(points);
         assertEquals(3, withoutDuplicates.size());
         assertAverages(withoutDuplicates);
-        withoutDuplicates = averageResultDuplicateRemover.removeDuplicates(points);
+        withoutDuplicates = averageResultDuplicateRemover.removeDuplicatePoints(points);
         assertEquals(3, withoutDuplicates.size());
         assertAverages(withoutDuplicates);
     }

@@ -9,22 +9,21 @@ import java.io.IOException;
 
 import static java.io.File.separator;
 
-public class ImageTilesSaver {
+public class ImageTileSaver {
 
-    public void saveTiles(ImageTilesForEveryZoom imageTilesForEveryZoom, File rootFolder) {
+    private File rootFolder;
+
+    public ImageTileSaver(File rootFolder) {
         assertFolder(rootFolder);
-        imageTilesForEveryZoom.getOneZoomTilesList().stream()
-                .forEach(oneZoomTiles -> {
-                    oneZoomTiles.getTiles().stream()
-                            .forEach(tile -> {
-                                tile.getImage();
-                                GoogleMapsTile mapsTile = tile.getTile();
-                                File directory = new File(rootFolder, mapsTile.getZoom() + separator + mapsTile.getX());
-                                createDirectoryIfNotExists(directory);
-                                File imageFile = new File(directory, mapsTile.getY().toString() + ".png");
-                                saveImage(imageFile, tile.getImage());
-                            });
-                });
+        this.rootFolder = rootFolder;
+    }
+
+    public void saveTile(ImageTile tile) {
+        GoogleMapsTile mapsTile = tile.getTile();
+        File directory = new File(rootFolder, mapsTile.getZoom() + separator + mapsTile.getX());
+        createDirectoryIfNotExists(directory);
+        File imageFile = new File(directory, mapsTile.getY().toString() + ".png");
+        saveImage(imageFile, tile.getImage());
     }
 
     private void saveImage(File imageFile, BufferedImage image) {

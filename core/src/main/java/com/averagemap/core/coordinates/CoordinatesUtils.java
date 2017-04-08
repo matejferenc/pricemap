@@ -60,7 +60,7 @@ public class CoordinatesUtils {
 //        return new Area<>(new LatLng(top, left), new LatLng(bottom, right));
 //    }
 
-    public static Area<GoogleMapsTile> getEncompassingArea(Collection<GoogleMapsPosition> positions) {
+    public static TilesArea getEncompassingArea(Collection<GoogleMapsPosition> positions) {
         final int zoom = assertZoomLevelIsTheSame(positions);
         int left = MAX_VALUE;
         int top = MAX_VALUE;
@@ -80,7 +80,7 @@ public class CoordinatesUtils {
                 bottom = y;
             }
         }
-        return new Area<>(
+        return new TilesArea(
                 positionToTile(new GoogleMapsPosition(left, top, zoom)),
                 positionToTile(new GoogleMapsPosition(right, bottom, zoom)));
     }

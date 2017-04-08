@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface DataPlotter {
 
-    ImageTilesForEveryZoom plot(Collection<Point<LatLng>> points, List<LatLng> outline);
+    void plot(Collection<Point<LatLng>> points, List<LatLng> outline);
 
 }

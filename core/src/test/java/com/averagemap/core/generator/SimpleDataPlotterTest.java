@@ -5,11 +5,15 @@ import com.averagemap.core.coordinates.DataPoint;
 import com.averagemap.core.coordinates.GoogleMapsPosition;
 import com.averagemap.core.coordinates.LatLng;
 import com.averagemap.core.coordinates.Point;
+import com.averagemap.core.coordinates.distance.Distance;
+import com.averagemap.core.coordinates.distance.EuclidDistance;
+import com.averagemap.core.coordinates.distance.NewYorkDistance;
 import com.averagemap.core.duplicate.AverageResultDuplicateRemover;
 import com.averagemap.core.duplicate.DuplicateRemover;
+import com.averagemap.core.duplicate.SimpleDuplicateRemover;
 import com.averagemap.core.images.ImageTilesForEveryZoom;
 import com.averagemap.core.images.ImageTilesForOneZoom;
-import com.averagemap.core.images.ImageTilesSaver;
+import com.averagemap.core.images.ImageTileSaver;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
@@ -24,13 +28,16 @@ public class SimpleDataPlotterTest {
 
     @Test
     public void test1() throws IOException {
-        DuplicateRemover<Integer, GoogleMapsPosition> duplicateRemover = new AverageResultDuplicateRemover<>();
-        ZoomSpecificDataPlotter zoomSpecificDataPlotter = new SimpleZoomSpecificDataPlotter(duplicateRemover);
-        SimpleDataPlotter simpleDataPlotter = new SimpleDataPlotter(zoomSpecificDataPlotter);
+        DuplicateRemover<Integer, GoogleMapsPosition> duplicatePointRemover = new AverageResultDuplicateRemover<>();
+        DuplicateRemover<Integer, GoogleMapsPosition> duplicatePositionRemover = new SimpleDuplicateRemover<>();
+        ImageTileSaver imageTileSaver = new ImageTileSaver(new File("C:\\dev\\java\\tmp"));
+//        Distance distance = new NewYorkDistance();
+        Distance distance = new EuclidDistance();
+        SingleZoomDataPlotter zoomSpecificDataPlotter = new SingleZoomDataPlotterImpl(imageTileSaver, distance);
+        int maxZoom = 8;
+        SimpleDataPlotter simpleDataPlotter = new SimpleDataPlotter(zoomSpecificDataPlotter, duplicatePointRemover, duplicatePositionRemover, maxZoom);
         List<LatLng> outline = loadCzechRepublicBorder();
-        ImageTilesForEveryZoom imageTilesForEveryZoom = simpleDataPlotter.plot(loadData(), outline);
-        new ImageTilesSaver().saveTiles(imageTilesForEveryZoom, new File("C:\\dev\\java\\tmp"));
-        List<ImageTilesForOneZoom> oneZoomTilesList = imageTilesForEveryZoom.getOneZoomTilesList();
+        simpleDataPlotter.plot(loadData(), outline);
     }
 
     private Collection<Point<LatLng>> randomPoints() {

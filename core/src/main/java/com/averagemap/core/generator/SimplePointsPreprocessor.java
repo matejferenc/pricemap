@@ -20,6 +20,6 @@ public class SimplePointsPreprocessor implements PointsPreprocessor {
 
     @Override
     public Collection<Point<LatLng>> preprocess(Collection<Point<LatLng>> points) {
-        return averageCalculator.calculateAverages(duplicateRemover.removeDuplicates(points));
+        return averageCalculator.calculateAverages(duplicateRemover.removeDuplicatePoints(points));
     }
 }

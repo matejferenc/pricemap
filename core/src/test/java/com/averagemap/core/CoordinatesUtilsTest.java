@@ -82,7 +82,7 @@ public class CoordinatesUtilsTest {
         points.add(latLngToPosition(QUADRIO, zoom));
         points.add(latLngToPosition(BRNO, zoom));
         points.add(latLngToPosition(HODONIN, zoom));
-        Area<GoogleMapsTile> encompassingArea = getEncompassingArea(points);
+        TilesArea encompassingArea = getEncompassingArea(points);
         GoogleMapsTile topLeft = encompassingArea.getTopLeft();
         assertEquals(138, topLeft.getX().intValue());
         assertEquals(86, topLeft.getY().intValue());

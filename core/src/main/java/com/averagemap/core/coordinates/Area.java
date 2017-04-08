@@ -1,5 +1,8 @@
 package com.averagemap.core.coordinates;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 public class Area<T extends Position2D> {
 
     private T topLeft;
@@ -26,4 +29,5 @@ public class Area<T extends Position2D> {
     public int getHeight() {
         return bottomRight.getY().intValue() - topLeft.getY().intValue() + 1;
     }
+
 }

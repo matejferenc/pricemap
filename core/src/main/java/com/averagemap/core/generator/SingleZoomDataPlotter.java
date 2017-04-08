@@ -7,8 +7,8 @@ import com.averagemap.core.images.ImageTilesForOneZoom;
 import java.util.Collection;
 import java.util.List;
 
-public interface ZoomSpecificDataPlotter {
+public interface SingleZoomDataPlotter {
 
-    ImageTilesForOneZoom plot(Collection<Point<GoogleMapsPosition>> points, List<GoogleMapsPosition> outline, int zoom);
+    void plot(Collection<Point<GoogleMapsPosition>> points, List<GoogleMapsPosition> outline, int zoom);
 
 }

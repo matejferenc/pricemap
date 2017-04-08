@@ -14,9 +14,9 @@ public class SimpleDuplicateRemoverTest {
     @Test
     public void test1() {
         Collection<Point<LatLng>> points = createPoints();
-        Collection<Point<LatLng>> withoutDuplicates = new SimpleDuplicateRemover().removeDuplicates(points);
+        Collection<Point<LatLng>> withoutDuplicates = new SimpleDuplicateRemover().removeDuplicatePoints(points);
         assertEquals(3, withoutDuplicates.size());
-        withoutDuplicates = new SimpleDuplicateRemover().removeDuplicates(points);
+        withoutDuplicates = new SimpleDuplicateRemover().removeDuplicatePoints(points);
         assertEquals(3, withoutDuplicates.size());
     }
 

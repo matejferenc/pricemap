@@ -3,40 +3,55 @@ package com.averagemap.core.generator;
 import com.averagemap.core.coordinates.GoogleMapsPosition;
 import com.averagemap.core.coordinates.LatLng;
 import com.averagemap.core.coordinates.Point;
+import com.averagemap.core.duplicate.DuplicateRemover;
 import com.averagemap.core.images.ImageTilesForEveryZoom;
-import com.averagemap.core.images.ImageTilesForOneZoom;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static com.averagemap.core.coordinates.CoordinatesUtils.latLngToPosition;
 import static java.util.stream.Collectors.toList;
 
 public class SimpleDataPlotter implements DataPlotter {
 
-    ZoomSpecificDataPlotter zoomSpecificDataPlotter;
+    private SingleZoomDataPlotter zoomSpecificDataPlotter;
+    private DuplicateRemover<Integer, GoogleMapsPosition> duplicatePointRemover;
+    private DuplicateRemover<Integer, GoogleMapsPosition> duplicatePositionRemover;
+    private int maxZoom;
 
-    public SimpleDataPlotter(ZoomSpecificDataPlotter zoomSpecificDataPlotter) {
+    public SimpleDataPlotter(SingleZoomDataPlotter zoomSpecificDataPlotter,
+                             DuplicateRemover<Integer, GoogleMapsPosition> duplicatePointRemover,
+                             DuplicateRemover<Integer, GoogleMapsPosition> duplicatePositionRemover,
+                             int maxZoom) {
         this.zoomSpecificDataPlotter = zoomSpecificDataPlotter;
+        this.duplicatePointRemover = duplicatePointRemover;
+        this.duplicatePositionRemover = duplicatePositionRemover;
+        this.maxZoom = maxZoom;
     }
 
     @Override
-    public ImageTilesForEveryZoom plot(Collection<Point<LatLng>> points, List<LatLng> outline) {
+    public void plot(Collection<Point<LatLng>> points, List<LatLng> outline) {
         ImageTilesForEveryZoom imageTilesForEveryZoom = new ImageTilesForEveryZoom();
-        for (int zoom = 0; zoom < 14; zoom++) {
-            ImageTilesForOneZoom imageTilesForOneZoom = generateImageTilesForOneZoom(points, outline, zoom);
-            imageTilesForEveryZoom.addImageTiles(imageTilesForOneZoom);
-        }
-        return imageTilesForEveryZoom;
+        IntStream.rangeClosed(0, maxZoom)
+//                .parallel()
+                .forEach(zoom -> {
+                    long start = System.currentTimeMillis();
+                    generateImageTilesForOneZoom(points, outline, zoom);
+                    long end = System.currentTimeMillis();
+                    System.out.println("Zoom " + zoom + " execution time: " + (end - start) / 1000 + " seconds");
+                });
     }
 
-    private ImageTilesForOneZoom generateImageTilesForOneZoom(Collection<Point<LatLng>> points, List<LatLng> outline, int zoom) {
-        List<Point<GoogleMapsPosition>> pointList = points.stream()
+    private void generateImageTilesForOneZoom(Collection<Point<LatLng>> points, List<LatLng> outline, int zoom) {
+        List<Point<GoogleMapsPosition>> pointList =
+                points.stream()
                 .map(point -> new Point<>(latLngToPosition(point.getPosition(), zoom), point.getValue()))
                 .collect(toList());
         List<GoogleMapsPosition> zoomSpecificOutline = outline.stream()
                 .map(position -> latLngToPosition(position, zoom))
                 .collect(toList());
-        return zoomSpecificDataPlotter.plot(pointList, zoomSpecificOutline, zoom);
+        zoomSpecificDataPlotter.plot(duplicatePointRemover.removeDuplicatePoints(pointList),
+                duplicatePositionRemover.removeDuplicatePositions(zoomSpecificOutline), zoom);
     }
 }
