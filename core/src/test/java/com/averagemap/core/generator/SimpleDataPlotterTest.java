@@ -30,11 +30,11 @@ public class SimpleDataPlotterTest {
     public void test1() throws IOException {
         DuplicateRemover<Integer, GoogleMapsPosition> duplicatePointRemover = new AverageResultDuplicateRemover<>();
         DuplicateRemover<Integer, GoogleMapsPosition> duplicatePositionRemover = new SimpleDuplicateRemover<>();
-        ImageTileSaver imageTileSaver = new ImageTileSaver(new File("C:\\dev\\java\\tmp"));
+        ImageTileSaver imageTileSaver = new ImageTileSaver(new File("C:\\dev\\java\\pricemap\\img"));
 //        Distance distance = new NewYorkDistance();
         Distance distance = new EuclidDistance();
         SingleZoomDataPlotter zoomSpecificDataPlotter = new SingleZoomDataPlotterImpl(imageTileSaver, distance);
-        int maxZoom = 8;
+        int maxZoom = 10;
         SimpleDataPlotter simpleDataPlotter = new SimpleDataPlotter(zoomSpecificDataPlotter, duplicatePointRemover, duplicatePositionRemover, maxZoom);
         List<LatLng> outline = loadCzechRepublicBorder();
         simpleDataPlotter.plot(loadData(), outline);
