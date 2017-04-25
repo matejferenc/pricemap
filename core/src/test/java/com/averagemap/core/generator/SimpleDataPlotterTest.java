@@ -1,6 +1,8 @@
 package com.averagemap.core.generator;
 
 import com.averagemap.core.CoordinatesUtilsTest;
+import com.averagemap.core.colorCalculator.ColorCalculator;
+import com.averagemap.core.colorCalculator.LevelColorCalculator;
 import com.averagemap.core.coordinates.DataPoint;
 import com.averagemap.core.coordinates.GoogleMapsPosition;
 import com.averagemap.core.coordinates.LatLng;
@@ -32,13 +34,14 @@ public class SimpleDataPlotterTest {
     public void test1() throws IOException {
         DuplicateRemover<Integer, GoogleMapsPosition> duplicatePointRemover = new AverageResultDuplicateRemover<>();
         DuplicateRemover<Integer, GoogleMapsPosition> duplicatePositionRemover = new SimpleDuplicateRemover<>();
-        ImageTileSaver imageTileSaver = new ImageTileSaver(new File("C:\\dev\\java\\pricemap\\img"));
+        ImageTileSaver imageTileSaver = new ImageTileSaver(new File(new File(this.getClass().getResource("/demo/index.html").getPath()).getParent() + "/img"));
         Distance distance;
 //        distance = new NewYorkDistance();
         distance = new EuclidDistance();
         PointValueCalculator pointValueCalculator = new InverseDistanceWeighting(distance);
-        SingleZoomDataPlotter zoomSpecificDataPlotter = new SingleZoomDataPlotterImpl(imageTileSaver, pointValueCalculator);
-        int maxZoom = 10;
+        ColorCalculator colorCalculator = new LevelColorCalculator();
+        SingleZoomDataPlotter zoomSpecificDataPlotter = new SingleZoomDataPlotterImpl(imageTileSaver, pointValueCalculator, colorCalculator);
+        int maxZoom = 8;
         SimpleDataPlotter simpleDataPlotter = new SimpleDataPlotter(zoomSpecificDataPlotter, duplicatePointRemover, duplicatePositionRemover, maxZoom);
         List<LatLng> outline = loadCzechRepublicBorder();
         simpleDataPlotter.plot(loadData(), outline);

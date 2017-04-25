@@ -44,7 +44,7 @@ public class ImageTileSaver {
 
     private void assertFolder(File rootFolder) {
         if (!rootFolder.exists()) {
-            throw new IllegalArgumentException("root folder does not exist");
+            throw new IllegalArgumentException("root folder does not exist: " + rootFolder);
         }
         if (!rootFolder.isDirectory()) {
             throw new IllegalArgumentException("root folder is not a folder");
