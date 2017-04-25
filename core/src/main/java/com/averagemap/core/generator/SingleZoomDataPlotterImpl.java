@@ -5,6 +5,7 @@ import com.averagemap.core.coordinates.Point;
 import com.averagemap.core.coordinates.distance.Distance;
 import com.averagemap.core.images.ImageTile;
 import com.averagemap.core.images.ImageTileSaver;
+import com.averagemap.core.valueCalculator.PointValueCalculator;
 import javafx.util.Pair;
 
 import java.awt.*;
@@ -30,15 +31,12 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
     private Color c5 = new Color(56, 185, 69);
     private Color c6 = new Color(1, 103, 55);
 
-    private GoogleMapsPosition topLeft;
-    private BufferedImage image;
+    private final ImageTileSaver imageTileSaver;
+    private final PointValueCalculator pointValueCalculator;
 
-    private ImageTileSaver imageTileSaver;
-    private Distance distance;
-
-    public SingleZoomDataPlotterImpl(ImageTileSaver imageTileSaver, Distance distance) {
+    public SingleZoomDataPlotterImpl(ImageTileSaver imageTileSaver, PointValueCalculator pointValueCalculator) {
         this.imageTileSaver = imageTileSaver;
-        this.distance = distance;
+        this.pointValueCalculator = pointValueCalculator;
     }
 
     @Override
@@ -77,80 +75,12 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
 
     private boolean shouldDraw(GeneralPath outlinePath, GoogleMapsPosition pixelPosition) {
         return outlinePath.contains(pixelPosition.getX(), pixelPosition.getY());
-//        return true;
     }
 
     private void drawPixel(int i, int j, BufferedImage image, Collection<Point<GoogleMapsPosition>> points, GoogleMapsPosition pixelPosition, Pair<Double, Double> minAndMaxValue) {
-        double averageValue = inverseDistanceWeighting2(points, pixelPosition);
+        double averageValue = pointValueCalculator.calculate(points, pixelPosition);
         Color color = calculateColorLevel(averageValue, minAndMaxValue);
         image.setRGB(i, j, color.getRGB());
-    }
-
-    private double nearestNeighbor(Collection<Point<GoogleMapsPosition>> points, GoogleMapsPosition pixelPosition) {
-        final double[] minDistance = {Double.MAX_VALUE};
-        final double[] value = new double[1];
-        points.stream()
-                .parallel()
-                .forEach(point -> {
-                    double distance = this.distance.distance(point.getPosition(), pixelPosition);
-                    if (distance < minDistance[0]) {
-                        minDistance[0] = distance;
-                        value[0] = point.getValue();
-                    }
-                });
-        return value[0];
-    }
-
-    private double inverseDistanceWeighting(Collection<Point<GoogleMapsPosition>> points, GoogleMapsPosition pixelPosition) {
-        for (Point<GoogleMapsPosition> point : points) {
-            if (point.getPosition().getX().equals(pixelPosition.getX())
-                    && point.getPosition().getY().equals(pixelPosition.getY())) {
-                return point.getValue();
-            }
-        }
-
-        PriorityQueue<Pair<Double, Double>> closestPoints = new PriorityQueue<>((Pair<Double, Double> o1, Pair<Double, Double> o2) -> {
-            return o2.getKey().compareTo(o1.getKey());
-        });
-        final int k = 30;
-        points.forEach(point -> {
-            double distance = this.distance.distance(point.getPosition(), pixelPosition);
-            if (closestPoints.size() >= k) {
-                if (closestPoints.peek().getKey() > distance) {
-                    closestPoints.poll();
-                    closestPoints.add(new Pair<>(distance, point.getValue()));
-                }
-            } else {
-                closestPoints.add(new Pair<>(distance, point.getValue()));
-            }
-        });
-        double sumOfWeights = closestPoints.stream().mapToDouble(pair -> 1 / pair.getKey()).sum();
-        return closestPoints.stream()
-                .mapToDouble(pair -> (1 / pair.getKey()) * pair.getValue())
-                .sum() / sumOfWeights;
-    }
-
-    private double inverseDistanceWeighting2(Collection<Point<GoogleMapsPosition>> points, GoogleMapsPosition pixelPosition) {
-        PriorityQueue<Pair<Double, Double>> closestPoints = new PriorityQueue<>((Pair<Double, Double> o1, Pair<Double, Double> o2) -> {
-            return o2.getKey().compareTo(o1.getKey());
-        });
-        final int k = 8 * (pixelPosition.getZoom() + 1);
-        points.forEach(point -> {
-            double distance = this.distance.distance(point.getPosition(), pixelPosition);
-//            distance = distance * distance;
-            if (closestPoints.size() >= k) {
-                if (closestPoints.peek().getKey() > distance) {
-                    closestPoints.poll();
-                    closestPoints.add(new Pair<>(distance, point.getValue()));
-                }
-            } else {
-                closestPoints.add(new Pair<>(distance, point.getValue()));
-            }
-        });
-        double sumOfWeights = closestPoints.stream().mapToDouble(pair -> 1 / (1 + pair.getKey())).sum();
-        return closestPoints.stream()
-                .mapToDouble(pair -> (1 / (1 + pair.getKey())) * pair.getValue())
-                .sum() / sumOfWeights;
     }
 
     private GeneralPath createOutline(List<GoogleMapsPosition> outline) {
