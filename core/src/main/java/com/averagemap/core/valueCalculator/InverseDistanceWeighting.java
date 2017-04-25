@@ -25,10 +25,8 @@ public class InverseDistanceWeighting implements PointValueCalculator {
             }
         }
 
-        PriorityQueue<Pair<Double, Double>> closestPoints = new PriorityQueue<>((Pair<Double, Double> o1, Pair<Double, Double> o2) -> {
-            return o2.getKey().compareTo(o1.getKey());
-        });
-        final int k = 30;
+        PriorityQueue<Pair<Double, Double>> closestPoints = new PriorityQueue<>((Pair<Double, Double> o1, Pair<Double, Double> o2) -> o2.getKey().compareTo(o1.getKey()));
+        final int k = 10;
         points.forEach(point -> {
             double distance = this.distance.distance(point.getPosition(), pixelPosition);
             if (closestPoints.size() >= k) {
