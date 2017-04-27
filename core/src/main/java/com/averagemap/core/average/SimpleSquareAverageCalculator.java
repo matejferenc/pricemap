@@ -1,10 +1,10 @@
 package com.averagemap.core.average;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
-
 import com.averagemap.core.coordinates.Point;
 import com.averagemap.core.coordinates.Position2D;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class SimpleSquareAverageCalculator implements AverageCalculator {
 

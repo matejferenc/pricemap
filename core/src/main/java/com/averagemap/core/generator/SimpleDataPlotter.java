@@ -4,7 +4,6 @@ import com.averagemap.core.coordinates.GoogleMapsPosition;
 import com.averagemap.core.coordinates.LatLng;
 import com.averagemap.core.coordinates.Point;
 import com.averagemap.core.duplicate.DuplicateRemover;
-import com.averagemap.core.images.ImageTilesForEveryZoom;
 
 import java.util.Collection;
 import java.util.List;
@@ -32,7 +31,6 @@ public class SimpleDataPlotter implements DataPlotter {
 
     @Override
     public void plot(Collection<Point<LatLng>> points, List<LatLng> outline) {
-        ImageTilesForEveryZoom imageTilesForEveryZoom = new ImageTilesForEveryZoom();
         IntStream.rangeClosed(0, maxZoom)
                 .forEach(zoom -> {
                     long start = System.currentTimeMillis();
@@ -43,14 +41,14 @@ public class SimpleDataPlotter implements DataPlotter {
     }
 
     private void generateImageTilesForOneZoom(Collection<Point<LatLng>> points, List<LatLng> outline, int zoom) {
-        List<Point<GoogleMapsPosition>> pointList =
+        Collection<Point<GoogleMapsPosition>> pointList = duplicatePointRemover.removeDuplicatePoints(
                 points.stream()
-                .map(point -> new Point<>(latLngToPosition(point.getPosition(), zoom), point.getValue()))
-                .collect(toList());
-        List<GoogleMapsPosition> zoomSpecificOutline = outline.stream()
-                .map(position -> latLngToPosition(position, zoom))
-                .collect(toList());
-        zoomSpecificDataPlotter.plot(duplicatePointRemover.removeDuplicatePoints(pointList),
-                duplicatePositionRemover.removeDuplicatePositions(zoomSpecificOutline), zoom);
+                        .map(point -> new Point<>(latLngToPosition(point.getPosition(), zoom), point.getValue()))
+                        .collect(toList()));
+        List<GoogleMapsPosition> zoomSpecificOutline = duplicatePositionRemover.removeDuplicatePositions(
+                outline.stream()
+                        .map(position -> latLngToPosition(position, zoom))
+                        .collect(toList()));
+        zoomSpecificDataPlotter.plot(pointList, zoomSpecificOutline, zoom);
     }
 }

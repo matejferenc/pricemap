@@ -32,10 +32,11 @@ package com.averagemap.core;/*
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.*;
-import java.awt.font.*;
-
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
+import java.awt.geom.AffineTransform;
 import java.net.URL;
 
 public class Starry extends JApplet {

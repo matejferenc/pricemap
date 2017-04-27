@@ -1,9 +1,11 @@
 package com.averagemap.core.generator;
 
 import com.averagemap.core.colorCalculator.ColorCalculator;
-import com.averagemap.core.coordinates.*;
+import com.averagemap.core.coordinates.GoogleMapsPosition;
+import com.averagemap.core.coordinates.GoogleMapsTile;
 import com.averagemap.core.coordinates.Point;
-import com.averagemap.core.coordinates.distance.Distance;
+import com.averagemap.core.coordinates.TilesArea;
+import com.averagemap.core.generator.filling.SquareFillingStrategy;
 import com.averagemap.core.images.ImageTile;
 import com.averagemap.core.images.ImageTileSaver;
 import com.averagemap.core.valueCalculator.PointValueCalculator;
@@ -15,9 +17,7 @@ import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.List;
-import java.util.PriorityQueue;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static com.averagemap.core.coordinates.CoordinatesUtils.TILE_SIZE;
 import static com.averagemap.core.coordinates.CoordinatesUtils.getEncompassingArea;
@@ -54,18 +54,21 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
         Graphics2D graphics2D = image.createGraphics();
         graphics2D.setPaint(new Color(0f, 0f, 0f, 0f));
         graphics2D.fillRect(0, 0, image.getWidth(), image.getHeight());
-        IntStream.range(0, image.getWidth())
-                .parallel()
-                .forEach(i -> {
-                    IntStream.range(0, image.getHeight())
-                            .parallel()
-                            .forEach(j -> {
-                                GoogleMapsPosition pixelPosition = new GoogleMapsPosition(tile.getX() * TILE_SIZE + i, tile.getY() * TILE_SIZE + j, tile.getZoom());
-                                if (shouldDraw(outlinePath, pixelPosition)) {
-                                    drawPixel(i, j, image, uniquePoints, pixelPosition, minAndMaxValue);
-                                }
-                            });
-                });
+        SquareFillingStrategy squareFillingStrategy = null;
+        squareFillingStrategy.fill(() -> {
+            IntStream.range(0, image.getWidth())
+                    .parallel()
+                    .forEach(i -> {
+                        IntStream.range(0, image.getHeight())
+                                .parallel()
+                                .forEach(j -> {
+                                    GoogleMapsPosition pixelPosition = new GoogleMapsPosition(tile.getX() * TILE_SIZE + i, tile.getY() * TILE_SIZE + j, tile.getZoom());
+                                    if (shouldDraw(outlinePath, pixelPosition)) {
+                                        drawPixel(i, j, image, uniquePoints, pixelPosition, minAndMaxValue);
+                                    }
+                                });
+                    });
+        });
         return image;
     }
 

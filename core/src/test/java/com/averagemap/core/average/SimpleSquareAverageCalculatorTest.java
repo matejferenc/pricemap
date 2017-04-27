@@ -1,13 +1,13 @@
 package com.averagemap.core.average;
 
+import com.averagemap.core.coordinates.LatLng;
+import com.averagemap.core.coordinates.Point;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.averagemap.core.coordinates.LatLng;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
-import com.averagemap.core.coordinates.Point;
+import static org.junit.Assert.assertTrue;
 
 public class SimpleSquareAverageCalculatorTest {
 

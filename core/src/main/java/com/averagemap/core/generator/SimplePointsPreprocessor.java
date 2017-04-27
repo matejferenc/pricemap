@@ -1,11 +1,11 @@
 package com.averagemap.core.generator;
 
-import java.util.Collection;
-
 import com.averagemap.core.average.AverageCalculator;
 import com.averagemap.core.coordinates.LatLng;
 import com.averagemap.core.coordinates.Point;
 import com.averagemap.core.duplicate.DuplicateRemover;
+
+import java.util.Collection;
 
 public class SimplePointsPreprocessor implements PointsPreprocessor {
 

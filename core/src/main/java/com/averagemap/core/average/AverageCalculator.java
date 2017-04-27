@@ -1,9 +1,9 @@
 package com.averagemap.core.average;
 
-import java.util.Collection;
-
 import com.averagemap.core.coordinates.Point;
 import com.averagemap.core.coordinates.Position2D;
+
+import java.util.Collection;
 
 public interface AverageCalculator {
 

@@ -1,13 +1,16 @@
 package com.averagemap.core;
 
-import com.averagemap.core.coordinates.*;
+import com.averagemap.core.coordinates.GoogleMapsPosition;
+import com.averagemap.core.coordinates.GoogleMapsTile;
+import com.averagemap.core.coordinates.LatLng;
+import com.averagemap.core.coordinates.TilesArea;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.averagemap.core.coordinates.CoordinatesUtils.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class CoordinatesUtilsTest {
 

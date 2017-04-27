@@ -1,11 +1,10 @@
 package com.averagemap.core.generator;
 
-import org.junit.Test;
-
 import com.averagemap.core.average.AverageCalculator;
 import com.averagemap.core.average.SimpleSquareAverageCalculator;
 import com.averagemap.core.duplicate.AverageResultDuplicateRemover;
 import com.averagemap.core.duplicate.DuplicateRemover;
+import org.junit.Test;
 
 public class SimplePointsPreprocessorTest {
 
