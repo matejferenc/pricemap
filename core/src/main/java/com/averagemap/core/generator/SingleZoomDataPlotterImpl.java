@@ -1,10 +1,11 @@
 package com.averagemap.core.generator;
 
 import com.averagemap.core.colorCalculator.ColorCalculator;
-import com.averagemap.core.coordinates.GoogleMapsPosition;
-import com.averagemap.core.coordinates.GoogleMapsTile;
+import com.averagemap.core.coordinates.*;
 import com.averagemap.core.coordinates.Point;
-import com.averagemap.core.coordinates.TilesArea;
+import com.averagemap.core.generator.filling.DefaultSquareFillingStrategy;
+import com.averagemap.core.generator.filling.EmptySquareFillingStrategy;
+import com.averagemap.core.generator.filling.FullSquareFillingStrategy;
 import com.averagemap.core.generator.filling.SquareFillingStrategy;
 import com.averagemap.core.images.ImageTile;
 import com.averagemap.core.images.ImageTileSaver;
@@ -54,32 +55,37 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
         Graphics2D graphics2D = image.createGraphics();
         graphics2D.setPaint(new Color(0f, 0f, 0f, 0f));
         graphics2D.fillRect(0, 0, image.getWidth(), image.getHeight());
-        SquareFillingStrategy squareFillingStrategy = null;
-        squareFillingStrategy.fill(() -> {
-            IntStream.range(0, image.getWidth())
-                    .parallel()
-                    .forEach(i -> {
-                        IntStream.range(0, image.getHeight())
-                                .parallel()
-                                .forEach(j -> {
-                                    GoogleMapsPosition pixelPosition = new GoogleMapsPosition(tile.getX() * TILE_SIZE + i, tile.getY() * TILE_SIZE + j, tile.getZoom());
-                                    if (shouldDraw(outlinePath, pixelPosition)) {
-                                        drawPixel(i, j, image, uniquePoints, pixelPosition, minAndMaxValue);
-                                    }
-                                });
-                    });
-        });
+        SquareFillingStrategy squareFillingStrategy = pickStrategy(tile, outlinePath);
+        squareFillingStrategy.fill(tile,
+                (InSquarePosition position, GoogleMapsPosition pixelPosition) -> drawPixel(position, image, uniquePoints, pixelPosition, minAndMaxValue),
+                (GoogleMapsPosition pixelPosition) -> shouldDraw(outlinePath, pixelPosition));
         return image;
+    }
+
+    private SquareFillingStrategy pickStrategy(GoogleMapsTile tile, GeneralPath outlinePath) {
+        int left = tile.getX() * TILE_SIZE;
+        int top = tile.getY() * TILE_SIZE;
+        if (outlinePath.contains(left, top, TILE_SIZE - 1, TILE_SIZE - 1)) {
+            System.out.println("full");
+            return new FullSquareFillingStrategy();
+        } else if (outlinePath.intersects(left, top, TILE_SIZE - 1, TILE_SIZE - 1)) {
+            System.out.println("default");
+            return new DefaultSquareFillingStrategy();
+        } else {
+            System.out.println("empty");
+            return new EmptySquareFillingStrategy();
+        }
     }
 
     private boolean shouldDraw(GeneralPath outlinePath, GoogleMapsPosition pixelPosition) {
         return outlinePath.contains(pixelPosition.getX(), pixelPosition.getY());
     }
 
-    private void drawPixel(int i, int j, BufferedImage image, Collection<Point<GoogleMapsPosition>> points, GoogleMapsPosition pixelPosition, Pair<Double, Double> minAndMaxValue) {
+    private Void drawPixel(InSquarePosition position, BufferedImage image, Collection<Point<GoogleMapsPosition>> points, GoogleMapsPosition pixelPosition, Pair<Double, Double> minAndMaxValue) {
         double averageValue = pointValueCalculator.calculate(points, pixelPosition);
         Color color = colorCalculator.calculate(averageValue, minAndMaxValue);
-        image.setRGB(i, j, color.getRGB());
+        image.setRGB(position.getX(), position.getY(), color.getRGB());
+        return null;
     }
 
     private GeneralPath createOutline(List<GoogleMapsPosition> outline) {

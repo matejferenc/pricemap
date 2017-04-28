@@ -1,10 +1,14 @@
 package com.averagemap.core.generator.filling;
 
+import com.averagemap.core.coordinates.GoogleMapsPosition;
+import com.averagemap.core.coordinates.GoogleMapsTile;
+import com.averagemap.core.coordinates.InSquarePosition;
+
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
-@FunctionalInterface
 public interface SquareFillingStrategy {
 
-    void fill(Function<Void, Void> fillingCode);
+    void fill(GoogleMapsTile tile, BiFunction<InSquarePosition, GoogleMapsPosition, Void> drawPixel, Function<GoogleMapsPosition, Boolean> shouldDraw);
 
 }
