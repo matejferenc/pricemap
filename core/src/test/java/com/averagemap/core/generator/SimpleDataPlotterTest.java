@@ -1,6 +1,7 @@
 package com.averagemap.core.generator;
 
 import com.averagemap.core.CoordinatesUtilsTest;
+import com.averagemap.core.colorCalculator.AbsoluteValueLevelColorCalculator;
 import com.averagemap.core.colorCalculator.ColorCalculator;
 import com.averagemap.core.colorCalculator.LevelColorCalculator;
 import com.averagemap.core.coordinates.DataPoint;
@@ -13,8 +14,8 @@ import com.averagemap.core.duplicate.AverageResultDuplicateRemover;
 import com.averagemap.core.duplicate.DuplicateRemover;
 import com.averagemap.core.duplicate.SimpleDuplicateRemover;
 import com.averagemap.core.images.ImageTileSaver;
-import com.averagemap.core.valueCalculator.InverseDistanceWeighting;
-import com.averagemap.core.valueCalculator.PointValueCalculator;
+import com.averagemap.core.valueCalculator.factory.InverseDistanceWeightingFactory;
+import com.averagemap.core.valueCalculator.factory.PointValueCalculatorFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
@@ -35,9 +36,9 @@ public class SimpleDataPlotterTest {
         Distance distance;
 //        distance = new NewYorkDistance();
         distance = new EuclidDistance();
-        PointValueCalculator pointValueCalculator = new InverseDistanceWeighting(distance);
-        ColorCalculator colorCalculator = new LevelColorCalculator();
-        SingleZoomDataPlotter zoomSpecificDataPlotter = new SingleZoomDataPlotterImpl(imageTileSaver, pointValueCalculator, colorCalculator);
+        PointValueCalculatorFactory pointValueCalculatorFactory = new InverseDistanceWeightingFactory(distance);
+        ColorCalculator colorCalculator = new AbsoluteValueLevelColorCalculator();
+        SingleZoomDataPlotter zoomSpecificDataPlotter = new SingleZoomDataPlotterImpl(imageTileSaver, pointValueCalculatorFactory, colorCalculator);
         int maxZoom = 10;
         SimpleDataPlotter simpleDataPlotter = new SimpleDataPlotter(zoomSpecificDataPlotter, duplicatePointRemover, duplicatePositionRemover, maxZoom);
         List<LatLng> outline = loadCzechRepublicBorder();
@@ -59,7 +60,7 @@ public class SimpleDataPlotterTest {
         Set<DataPoint> points = objectMapper.readValue(file, new TypeReference<HashSet<DataPoint>>() {
         });
         return points.stream()
-                .filter(point -> point.getValue() > 1)
+                .filter(point -> point.getValue() > 1000)
                 .filter(point -> point.getValue() < 150000)
                 .map(point -> new Point<>(new LatLng(point.getLat(), point.getLng()), point.getValue()))
                 .collect(toSet());

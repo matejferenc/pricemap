@@ -10,6 +10,7 @@ import com.averagemap.core.generator.filling.SquareFillingStrategy;
 import com.averagemap.core.images.ImageTile;
 import com.averagemap.core.images.ImageTileSaver;
 import com.averagemap.core.valueCalculator.PointValueCalculator;
+import com.averagemap.core.valueCalculator.factory.PointValueCalculatorFactory;
 import javafx.util.Pair;
 
 import java.awt.*;
@@ -18,7 +19,6 @@ import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static com.averagemap.core.coordinates.CoordinatesUtils.TILE_SIZE;
 import static com.averagemap.core.coordinates.CoordinatesUtils.getEncompassingArea;
@@ -27,12 +27,12 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
 
     private final ImageTileSaver imageTileSaver;
-    private final PointValueCalculator pointValueCalculator;
+    private final PointValueCalculatorFactory pointValueCalculatorFactory;
     private final ColorCalculator colorCalculator;
 
-    public SingleZoomDataPlotterImpl(ImageTileSaver imageTileSaver, PointValueCalculator pointValueCalculator, ColorCalculator colorCalculator) {
+    public SingleZoomDataPlotterImpl(ImageTileSaver imageTileSaver, PointValueCalculatorFactory pointValueCalculatorFactory, ColorCalculator colorCalculator) {
         this.imageTileSaver = imageTileSaver;
-        this.pointValueCalculator = pointValueCalculator;
+        this.pointValueCalculatorFactory = pointValueCalculatorFactory;
         this.colorCalculator = colorCalculator;
     }
 
@@ -56,9 +56,9 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
         graphics2D.setPaint(new Color(0f, 0f, 0f, 0f));
         graphics2D.fillRect(0, 0, image.getWidth(), image.getHeight());
         SquareFillingStrategy squareFillingStrategy = pickStrategy(tile, outlinePath);
-        PointValueCalculator pointValueCalculatorForTile = this.pointValueCalculator.prepareForTile(tile, uniquePoints);
+        PointValueCalculator pointValueCalculator = this.pointValueCalculatorFactory.create(tile, uniquePoints);
         squareFillingStrategy.fill(tile,
-                (InSquarePosition position, GoogleMapsPosition pixelPosition) -> drawPixel(position, image, pointValueCalculatorForTile, pixelPosition, minAndMaxValue),
+                (InSquarePosition position, GoogleMapsPosition pixelPosition) -> drawPixel(position, image, pointValueCalculator, pixelPosition, minAndMaxValue),
                 (GoogleMapsPosition pixelPosition) -> shouldDraw(outlinePath, pixelPosition));
         return image;
     }
