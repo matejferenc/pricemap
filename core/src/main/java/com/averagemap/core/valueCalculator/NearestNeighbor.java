@@ -1,6 +1,7 @@
 package com.averagemap.core.valueCalculator;
 
 import com.averagemap.core.coordinates.GoogleMapsPosition;
+import com.averagemap.core.coordinates.GoogleMapsTile;
 import com.averagemap.core.coordinates.Point;
 import com.averagemap.core.coordinates.distance.Distance;
 
@@ -10,12 +11,19 @@ public class NearestNeighbor implements PointValueCalculator {
 
     private final Distance distance;
 
+    private Collection<Point<GoogleMapsPosition>> points;
+
     public NearestNeighbor(Distance distance) {
         this.distance = distance;
     }
 
+    public NearestNeighbor(Distance distance, Collection<Point<GoogleMapsPosition>> points) {
+        this.distance = distance;
+        this.points = points;
+    }
+
     @Override
-    public double calculate(Collection<Point<GoogleMapsPosition>> points, GoogleMapsPosition pixelPosition) {
+    public double calculate(GoogleMapsPosition pixelPosition) {
         final double[] minDistance = {Double.MAX_VALUE};
         final double[] value = new double[1];
         points.stream()
@@ -28,5 +36,10 @@ public class NearestNeighbor implements PointValueCalculator {
                     }
                 });
         return value[0];
+    }
+
+    @Override
+    public PointValueCalculator prepareForTile(GoogleMapsTile tile, Collection<Point<GoogleMapsPosition>> points) {
+        return new NearestNeighbor(distance, points);
     }
 }
