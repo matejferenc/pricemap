@@ -43,4 +43,5 @@ public class InverseDistanceWeighting implements PointValueCalculator {
                 .mapToDouble(pair -> (1 / pair.getKey()) * pair.getValue())
                 .sum() / sumOfWeights;
     }
+    
 }
