@@ -32,6 +32,10 @@ public class InverseDistanceWeighting implements PointValueCalculator {
         final int k = 10;
         points.forEach(point -> {
             double distance = this.distance.distance(point.getPosition(), pixelPosition);
+            if (new Double(distance).equals(Double.NaN)) {
+                //check for possible NaN values. We skip this point
+                return;
+            }
             if (closestPoints.size() >= k) {
                 if (closestPoints.peek().getKey() > distance) {
                     closestPoints.poll();

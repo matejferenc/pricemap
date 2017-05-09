@@ -14,8 +14,8 @@ import com.averagemap.core.valueCalculator.factory.PointValueCalculatorFactory;
 import javafx.util.Pair;
 
 import java.awt.*;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Path2D;
+import java.awt.geom.*;
+import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.List;
@@ -56,10 +56,12 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
         graphics2D.setPaint(new Color(0f, 0f, 0f, 0f));
         graphics2D.fillRect(0, 0, image.getWidth(), image.getHeight());
         SquareFillingStrategy squareFillingStrategy = pickStrategy(tile, outlinePath);
+        Area area = new Area(outlinePath);
+        area.intersect(new Area(new Rectangle2D.Double(tile.getX() * TILE_SIZE, tile.getY() * TILE_SIZE, TILE_SIZE, TILE_SIZE)));
         PointValueCalculator pointValueCalculator = this.pointValueCalculatorFactory.create(tile, uniquePoints);
         squareFillingStrategy.fill(tile,
                 (InSquarePosition position, GoogleMapsPosition pixelPosition) -> drawPixel(position, image, pointValueCalculator, pixelPosition, minAndMaxValue),
-                (GoogleMapsPosition pixelPosition) -> shouldDraw(outlinePath, pixelPosition));
+                (GoogleMapsPosition pixelPosition) -> shouldDraw(area, pixelPosition));
         return image;
     }
 
@@ -78,7 +80,7 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
         }
     }
 
-    private boolean shouldDraw(GeneralPath outlinePath, GoogleMapsPosition pixelPosition) {
+    private boolean shouldDraw(Area outlinePath, GoogleMapsPosition pixelPosition) {
         return outlinePath.contains(pixelPosition.getX(), pixelPosition.getY());
     }
 

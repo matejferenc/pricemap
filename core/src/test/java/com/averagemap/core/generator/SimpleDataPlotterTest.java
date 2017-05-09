@@ -39,7 +39,7 @@ public class SimpleDataPlotterTest {
         PointValueCalculatorFactory pointValueCalculatorFactory = new InverseDistanceWeightingFactory(distance);
         ColorCalculator colorCalculator = new AbsoluteValueLevelColorCalculator();
         SingleZoomDataPlotter zoomSpecificDataPlotter = new SingleZoomDataPlotterImpl(imageTileSaver, pointValueCalculatorFactory, colorCalculator);
-        int maxZoom = 10;
+        int maxZoom = 12;
         SimpleDataPlotter simpleDataPlotter = new SimpleDataPlotter(zoomSpecificDataPlotter, duplicatePointRemover, duplicatePositionRemover, maxZoom);
         List<LatLng> outline = loadCzechRepublicBorder();
         simpleDataPlotter.plot(loadData(), outline);
