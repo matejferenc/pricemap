@@ -62,6 +62,18 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
         squareFillingStrategy.fill(tile,
                 (InSquarePosition position, GoogleMapsPosition pixelPosition) -> drawPixel(position, image, pointValueCalculator, pixelPosition, minAndMaxValue),
                 (GoogleMapsPosition pixelPosition) -> shouldDraw(area, pixelPosition));
+        graphics2D.setColor(Color.RED);
+        uniquePoints.stream()
+                .filter(point -> point.getPosition().getX() >= tile.getX() * TILE_SIZE)
+                .filter(point -> point.getPosition().getX() < tile.getX() * TILE_SIZE + TILE_SIZE)
+                .filter(point -> point.getPosition().getY() >= tile.getY() * TILE_SIZE)
+                .filter(point -> point.getPosition().getY() < tile.getY() * TILE_SIZE + TILE_SIZE)
+                .forEach(point -> {
+                    graphics2D.fillRect(point.getPosition().getX() - tile.getX() * TILE_SIZE - 1,
+                            point.getPosition().getY() - tile.getY() * TILE_SIZE - 1,
+                            3,
+                            3);
+                });
         return image;
     }
 
