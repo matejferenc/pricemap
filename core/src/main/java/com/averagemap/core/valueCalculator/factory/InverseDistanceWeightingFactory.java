@@ -39,6 +39,7 @@ public class InverseDistanceWeightingFactory implements PointValueCalculatorFact
         GoogleMapsPosition tileCenter = new GoogleMapsPosition(tile.getX() * TILE_SIZE + TILE_SIZE / 2, tile.getY() * TILE_SIZE + TILE_SIZE / 2, tile.getZoom());
         NewYorkDistance newYorkDistance = new NewYorkDistance();
         double maxDistance = Math.pow(2, tile.getZoom()) * 4;
+        // filtering out all the points which are too far away - at zoom 6, 1 tile away (256px). Other zooms accordingly
         Collection<Point<GoogleMapsPosition>> finalPoints = points.stream()
                 .filter(point -> newYorkDistance.distance(tileCenter, point.getPosition()) < maxDistance)
                 .collect(Collectors.toList());
@@ -55,13 +56,13 @@ public class InverseDistanceWeightingFactory implements PointValueCalculatorFact
         IntStream.range(0, TILE_SIZE)
                 .forEach(j -> {
                             GoogleMapsPosition pixelPositionLeft = new GoogleMapsPosition(tile.getX() * TILE_SIZE, tile.getY() * TILE_SIZE + j, tile.getZoom());
-                            filteredPoints.addAll(getClosestPoints(points, pixelPositionLeft));
+                            filteredPoints.addAll(getClosestPoints(finalPoints, pixelPositionLeft));
                             GoogleMapsPosition pixelPositionRight = new GoogleMapsPosition(tile.getX() * TILE_SIZE + TILE_SIZE - 1, tile.getY() * TILE_SIZE + j, tile.getZoom());
-                            filteredPoints.addAll(getClosestPoints(points, pixelPositionRight));
+                            filteredPoints.addAll(getClosestPoints(finalPoints, pixelPositionRight));
                         }
                 );
 
-        Set<Point<GoogleMapsPosition>> inside = points.stream()
+        Set<Point<GoogleMapsPosition>> inside = finalPoints.stream()
                 .filter(point -> point.getPosition().getX() >= tile.getX() * TILE_SIZE)
                 .filter(point -> point.getPosition().getX() <= tile.getX() * TILE_SIZE + TILE_SIZE - 1)
                 .filter(point -> point.getPosition().getY() >= tile.getY() * TILE_SIZE)
