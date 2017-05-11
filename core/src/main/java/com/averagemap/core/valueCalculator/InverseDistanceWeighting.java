@@ -33,7 +33,9 @@ public class InverseDistanceWeighting implements PointValueCalculator {
         points.forEach(point -> {
             double distance = this.distance.distance(point.getPosition(), pixelPosition);
             if (new Double(distance).equals(Double.NaN)) {
-                throw new RuntimeException("NaN: " + point.getPosition().getX() + " : " + point.getPosition().getY() + " : " + point.getPosition().getZoom());
+//                System.out.println("NaN found in InverseDistanceWeighting");
+                return;
+//                throw new RuntimeException("NaN: " + point.getPosition().getX() + " : " + point.getPosition().getY() + " : " + point.getPosition().getZoom());
             }
             if (closestPoints.size() >= k) {
                 if (closestPoints.peek().getKey() > distance) {
