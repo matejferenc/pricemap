@@ -38,8 +38,8 @@ public class InverseDistanceWeightingFactory implements PointValueCalculatorFact
     public PointValueCalculator create(GoogleMapsTile tile, Collection<Point<GoogleMapsPosition>> points) {
         GoogleMapsPosition tileCenter = new GoogleMapsPosition(tile.getX() * TILE_SIZE + TILE_SIZE / 2, tile.getY() * TILE_SIZE + TILE_SIZE / 2, tile.getZoom());
         NewYorkDistance newYorkDistance = new NewYorkDistance();
-        double maxDistance = Math.pow(2, tile.getZoom()) * 2;
-        // filtering out all the points which are too far away - at zoom 6, 1 tile away (256px). Other zooms accordingly
+        double maxDistance = Math.pow(2, tile.getZoom());
+        // filtering out all the points which are too far away - at zoom 8, 1 tile away (256px). Other zooms accordingly
         Collection<Point<GoogleMapsPosition>> finalPoints = points.stream()
                 .filter(point -> newYorkDistance.distance(tileCenter, point.getPosition()) < maxDistance)
                 .collect(Collectors.toList());
