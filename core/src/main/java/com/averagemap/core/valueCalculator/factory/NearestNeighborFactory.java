@@ -12,13 +12,20 @@ import java.util.Collection;
 public class NearestNeighborFactory implements PointValueCalculatorFactory {
 
     private final Distance distance;
+    private Collection<Point<GoogleMapsPosition>> points;
+
 
     public NearestNeighborFactory(Distance distance) {
         this.distance = distance;
     }
 
     @Override
-    public PointValueCalculator create(GoogleMapsTile tile, Collection<Point<GoogleMapsPosition>> points) {
+    public void setUp(Collection<Point<GoogleMapsPosition>> points) {
+        this.points = points;
+    }
+
+    @Override
+    public PointValueCalculator create(GoogleMapsTile tile) {
         //TODO: possibly limit points to square surroundings, if this implementation is ever going to be used
         return new NearestNeighbor(distance, points);
     }

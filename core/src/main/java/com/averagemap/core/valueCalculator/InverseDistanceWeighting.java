@@ -14,6 +14,8 @@ public class InverseDistanceWeighting implements PointValueCalculator {
 
     private final Collection<Point<GoogleMapsPosition>> points;
 
+    private final static int k = 10;
+
     public InverseDistanceWeighting(Distance distance, Collection<Point<GoogleMapsPosition>> points) {
         this.distance = distance;
         this.points = points;
@@ -29,7 +31,6 @@ public class InverseDistanceWeighting implements PointValueCalculator {
         }
 
         PriorityQueue<Pair<Double, Double>> closestPoints = new PriorityQueue<>((Pair<Double, Double> o1, Pair<Double, Double> o2) -> o2.getKey().compareTo(o1.getKey()));
-        final int k = 10;
         points.forEach(point -> {
             double distance = this.distance.distance(point.getPosition(), pixelPosition);
             if (new Double(distance).equals(Double.NaN)) {

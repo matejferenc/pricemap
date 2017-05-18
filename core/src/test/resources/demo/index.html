@@ -37,17 +37,17 @@
         this.tileSize = tileSize;
     }
 
-    <!--CoordMapType.prototype.getTile = function(coord, zoom, ownerDocument) {-->
-        <!--var div = ownerDocument.createElement('div');-->
-        <!--div.innerHTML = "zoom:" + zoom + ", coords: " + coord;-->
-        <!--div.style.width = this.tileSize.width + 'px';-->
-        <!--div.style.height = this.tileSize.height + 'px';-->
-        <!--div.style.fontSize = '10';-->
-        <!--div.style.borderStyle = 'solid';-->
-        <!--div.style.borderWidth = '1px';-->
-        <!--div.style.borderColor = '#AAAAAA';-->
-        <!--return div;-->
-    <!--};-->
+    CoordMapType.prototype.getTile = function(coord, zoom, ownerDocument) {
+        var div = ownerDocument.createElement('div');
+        div.innerHTML = "zoom:" + zoom + ", coords: " + coord;
+        div.style.width = this.tileSize.width + 'px';
+        div.style.height = this.tileSize.height + 'px';
+        div.style.fontSize = '10';
+        div.style.borderStyle = 'solid';
+        div.style.borderWidth = '1px';
+        div.style.borderColor = '#AAAAAA';
+        return div;
+    };
 
     function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {

@@ -40,6 +40,7 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
     public void plot(Collection<Point<GoogleMapsPosition>> points, List<GoogleMapsPosition> outline, int zoom) {
         TilesArea tilesArea = getEncompassingArea(outline);
         Pair<Double, Double> minAndMaxValue = countMinAndMaxValue(points);
+        pointValueCalculatorFactory.setUp(points);
         GeneralPath outlinePath = createOutline(outline);
         tilesArea.stream()
                 .parallel()
@@ -56,12 +57,22 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
         graphics2D.setPaint(new Color(0f, 0f, 0f, 0f));
         graphics2D.fillRect(0, 0, image.getWidth(), image.getHeight());
         SquareFillingStrategy squareFillingStrategy = pickStrategy(tile, outlinePath);
-        Area area = new Area(outlinePath);
-        area.intersect(new Area(new Rectangle2D.Double(tile.getX() * TILE_SIZE, tile.getY() * TILE_SIZE, TILE_SIZE, TILE_SIZE)));
-        PointValueCalculator pointValueCalculator = this.pointValueCalculatorFactory.create(tile, uniquePoints);
+        Area drawingArea = getDrawingArea(tile, outlinePath);
         squareFillingStrategy.fill(tile,
-                (InSquarePosition position, GoogleMapsPosition pixelPosition) -> drawPixel(position, image, pointValueCalculator, pixelPosition, minAndMaxValue),
-                (GoogleMapsPosition pixelPosition) -> shouldDraw(area, pixelPosition));
+                pointValueCalculatorFactory,
+                (PointValueCalculator pointValueCalculator, GoogleMapsPosition pixelPosition) -> drawPixel(image, pointValueCalculator, pixelPosition, minAndMaxValue),
+                (GoogleMapsPosition pixelPosition) -> shouldDraw(drawingArea, pixelPosition));
+        drawPointsAsPixels(tile, uniquePoints, graphics2D);
+        return image;
+    }
+
+    private Area getDrawingArea(GoogleMapsTile tile, GeneralPath outlinePath) {
+        Area drawingArea = new Area(outlinePath);
+        drawingArea.intersect(new Area(new Rectangle2D.Double(tile.getX() * TILE_SIZE, tile.getY() * TILE_SIZE, TILE_SIZE, TILE_SIZE)));
+        return drawingArea;
+    }
+
+    private void drawPointsAsPixels(GoogleMapsTile tile, Collection<Point<GoogleMapsPosition>> uniquePoints, Graphics2D graphics2D) {
         graphics2D.setColor(Color.RED);
         uniquePoints.stream()
                 .filter(point -> point.getPosition().getX() >= tile.getX() * TILE_SIZE)
@@ -74,13 +85,13 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
                             3,
                             3);
                 });
-        return image;
     }
 
     private SquareFillingStrategy pickStrategy(GoogleMapsTile tile, GeneralPath outlinePath) {
         int left = tile.getX() * TILE_SIZE;
         int top = tile.getY() * TILE_SIZE;
-        if (outlinePath.contains(left, top, TILE_SIZE - 1, TILE_SIZE - 1)) {
+        boolean wholeTileIsInOutlinePath = outlinePath.contains(left, top, TILE_SIZE - 1, TILE_SIZE - 1);
+        if (wholeTileIsInOutlinePath) {
 //            System.out.println("full");
             return new FullSquareFillingStrategy();
         } else if (outlinePath.intersects(left, top, TILE_SIZE - 1, TILE_SIZE - 1)) {
@@ -96,7 +107,8 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
         return outlinePath.contains(pixelPosition.getX(), pixelPosition.getY());
     }
 
-    private Void drawPixel(InSquarePosition position, BufferedImage image, PointValueCalculator pointValueCalculatorForTile, GoogleMapsPosition pixelPosition, Pair<Double, Double> minAndMaxValue) {
+    private Void drawPixel(BufferedImage image, PointValueCalculator pointValueCalculatorForTile, GoogleMapsPosition pixelPosition, Pair<Double, Double> minAndMaxValue) {
+        InSquarePosition position = new InSquarePosition(pixelPosition.getX() % TILE_SIZE, pixelPosition.getY() % TILE_SIZE);
         double averageValue = pointValueCalculatorForTile.calculate(pixelPosition);
         Color color = colorCalculator.calculate(averageValue, minAndMaxValue);
         image.setRGB(position.getX(), position.getY(), color.getRGB());

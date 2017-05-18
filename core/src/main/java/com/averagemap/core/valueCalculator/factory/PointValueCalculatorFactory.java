@@ -9,5 +9,7 @@ import java.util.Collection;
 
 public interface PointValueCalculatorFactory {
 
-    PointValueCalculator create(GoogleMapsTile tile, Collection<Point<GoogleMapsPosition>> points);
+    void setUp(Collection<Point<GoogleMapsPosition>> points);
+
+    PointValueCalculator create(GoogleMapsTile tile);
 }

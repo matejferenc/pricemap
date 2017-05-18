@@ -14,16 +14,16 @@ import static java.util.stream.Collectors.toList;
 
 public class SimpleDataPlotter implements DataPlotter {
 
-    private SingleZoomDataPlotter zoomSpecificDataPlotter;
+    private SingleZoomDataPlotter singleZoomDataPlotter;
     private DuplicateRemover<Integer, GoogleMapsPosition> duplicatePointRemover;
     private DuplicateRemover<Integer, GoogleMapsPosition> duplicatePositionRemover;
     private int maxZoom;
 
-    public SimpleDataPlotter(SingleZoomDataPlotter zoomSpecificDataPlotter,
+    public SimpleDataPlotter(SingleZoomDataPlotter singleZoomDataPlotter,
                              DuplicateRemover<Integer, GoogleMapsPosition> duplicatePointRemover,
                              DuplicateRemover<Integer, GoogleMapsPosition> duplicatePositionRemover,
                              int maxZoom) {
-        this.zoomSpecificDataPlotter = zoomSpecificDataPlotter;
+        this.singleZoomDataPlotter = singleZoomDataPlotter;
         this.duplicatePointRemover = duplicatePointRemover;
         this.duplicatePositionRemover = duplicatePositionRemover;
         this.maxZoom = maxZoom;
@@ -49,6 +49,6 @@ public class SimpleDataPlotter implements DataPlotter {
                 outline.stream()
                         .map(position -> latLngToPosition(position, zoom))
                         .collect(toList()));
-        zoomSpecificDataPlotter.plot(pointList, zoomSpecificOutline, zoom);
+        singleZoomDataPlotter.plot(pointList, zoomSpecificOutline, zoom);
     }
 }
