@@ -3,7 +3,6 @@ package com.averagemap.core.generator;
 import com.averagemap.core.CoordinatesUtilsTest;
 import com.averagemap.core.colorCalculator.AbsoluteValueLevelColorCalculator;
 import com.averagemap.core.colorCalculator.ColorCalculator;
-import com.averagemap.core.colorCalculator.LevelColorCalculator;
 import com.averagemap.core.coordinates.DataPoint;
 import com.averagemap.core.coordinates.GoogleMapsPosition;
 import com.averagemap.core.coordinates.LatLng;

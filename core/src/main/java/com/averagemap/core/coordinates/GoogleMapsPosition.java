@@ -48,4 +48,13 @@ public class GoogleMapsPosition implements Position2D<Integer> {
         result = 31 * result + y;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "GoogleMapsPosition{" +
+                "zoom=" + zoom +
+                ", x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }

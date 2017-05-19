@@ -14,8 +14,10 @@ import com.averagemap.core.valueCalculator.factory.PointValueCalculatorFactory;
 import javafx.util.Pair;
 
 import java.awt.*;
-import java.awt.geom.*;
 import java.awt.geom.Area;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.List;
@@ -92,13 +94,10 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
         int top = tile.getY() * TILE_SIZE;
         boolean wholeTileIsInOutlinePath = outlinePath.contains(left, top, TILE_SIZE - 1, TILE_SIZE - 1);
         if (wholeTileIsInOutlinePath) {
-//            System.out.println("full");
             return new FullSquareFillingStrategy();
         } else if (outlinePath.intersects(left, top, TILE_SIZE - 1, TILE_SIZE - 1)) {
-//            System.out.println("default");
             return new DefaultSquareFillingStrategy();
         } else {
-//            System.out.println("empty");
             return new EmptySquareFillingStrategy();
         }
     }

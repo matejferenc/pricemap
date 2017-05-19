@@ -19,8 +19,6 @@ public class InverseDistanceWeightingFactory implements PointValueCalculatorFact
 
     private final Distance distance;
 
-    private static final int k = 10;
-
     private Map<GoogleMapsTile, List<Point<GoogleMapsPosition>>> grid;
 
     public InverseDistanceWeightingFactory(Distance distance) {
@@ -67,7 +65,6 @@ public class InverseDistanceWeightingFactory implements PointValueCalculatorFact
         if (currentTilePoints != null) {
             filteredPoints.addAll(currentTilePoints);
         }
-//        System.out.println("tile contains " + inside.size() + " points");
 
         return new InverseDistanceWeighting(distance, filteredPoints);
     }
@@ -90,9 +87,6 @@ public class InverseDistanceWeightingFactory implements PointValueCalculatorFact
                     temp.add(point);
                 }
             });
-            if (currentRing.size() >= k) {
-                break;
-            }
             nextRing.clear();
             nextRing.addAll(temp);
             temp.clear();
@@ -107,7 +101,7 @@ public class InverseDistanceWeightingFactory implements PointValueCalculatorFact
                     nextRing.add(point);
                 }
             });
-            if (currentRing.size() >= k) {
+            if (currentRing.size() >= InverseDistanceWeighting.K) {
                 break;
             }
         }
@@ -118,7 +112,7 @@ public class InverseDistanceWeightingFactory implements PointValueCalculatorFact
                 //check for possible NaN values. We skip this point
                 return;
             }
-            if (closestPoints.size() >= k) {
+            if (closestPoints.size() >= InverseDistanceWeighting.K) {
                 if (closestPoints.peek().getKey() > distance) {
                     closestPoints.poll();
                     closestPoints.add(new Pair<>(distance, point));

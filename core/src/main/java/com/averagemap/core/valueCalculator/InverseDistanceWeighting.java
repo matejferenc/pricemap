@@ -14,7 +14,7 @@ public class InverseDistanceWeighting implements PointValueCalculator {
 
     private final Collection<Point<GoogleMapsPosition>> points;
 
-    private final static int k = 10;
+    public final static int K = 20;
 
     public InverseDistanceWeighting(Distance distance, Collection<Point<GoogleMapsPosition>> points) {
         this.distance = distance;
@@ -34,11 +34,10 @@ public class InverseDistanceWeighting implements PointValueCalculator {
         points.forEach(point -> {
             double distance = this.distance.distance(point.getPosition(), pixelPosition);
             if (new Double(distance).equals(Double.NaN)) {
-//                System.out.println("NaN found in InverseDistanceWeighting");
                 return;
-//                throw new RuntimeException("NaN: " + point.getPosition().getX() + " : " + point.getPosition().getY() + " : " + point.getPosition().getZoom());
             }
-            if (closestPoints.size() >= k) {
+//            distance *= distance;
+            if (closestPoints.size() >= K) {
                 if (closestPoints.peek().getKey() > distance) {
                     closestPoints.poll();
                     closestPoints.add(new Pair<>(distance, point.getValue()));
