@@ -14,7 +14,7 @@ public class InverseDistanceWeighting implements PointValueCalculator {
 
     private final Collection<Point<GoogleMapsPosition>> points;
 
-    public final static int K = 20;
+    public final static int K = 10;
 
     public InverseDistanceWeighting(Distance distance, Collection<Point<GoogleMapsPosition>> points) {
         this.distance = distance;

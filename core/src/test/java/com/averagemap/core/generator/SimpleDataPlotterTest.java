@@ -17,6 +17,8 @@ import com.averagemap.core.valueCalculator.factory.InverseDistanceWeightingFacto
 import com.averagemap.core.valueCalculator.factory.PointValueCalculatorFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.micromata.opengis.kml.v_2_2_0.*;
+import org.geojson.FeatureCollection;
 import org.junit.Test;
 
 import java.io.File;
@@ -28,7 +30,7 @@ import static java.util.stream.Collectors.toSet;
 public class SimpleDataPlotterTest {
 
     @Test
-    public void test1() throws IOException {
+    public void testCzFlatPrices() throws IOException {
         DuplicateRemover<Integer, GoogleMapsPosition> duplicatePointRemover = new AverageResultDuplicateRemover<>();
         DuplicateRemover<Integer, GoogleMapsPosition> duplicatePositionRemover = new SimpleDuplicateRemover<>();
         ImageTileSaver imageTileSaver = new ImageTileSaver(new File(new File(this.getClass().getResource("/demo/index.html").getPath()).getParent() + "/img"));
@@ -42,6 +44,33 @@ public class SimpleDataPlotterTest {
         SimpleDataPlotter simpleDataPlotter = new SimpleDataPlotter(zoomSpecificDataPlotter, duplicatePointRemover, duplicatePositionRemover, maxZoom);
         List<LatLng> outline = loadCzechRepublicBorder();
         simpleDataPlotter.plot(loadData(), outline);
+    }
+
+    @Test
+    public void testFrPopulation() throws IOException {
+        DuplicateRemover<Integer, GoogleMapsPosition> duplicatePointRemover = new AverageResultDuplicateRemover<>();
+        DuplicateRemover<Integer, GoogleMapsPosition> duplicatePositionRemover = new SimpleDuplicateRemover<>();
+        ImageTileSaver imageTileSaver = new ImageTileSaver(new File(new File(this.getClass().getResource("/demo/index.html").getPath()).getParent() + "/img"));
+        Distance distance;
+        distance = new EuclidDistance();
+        PointValueCalculatorFactory pointValueCalculatorFactory = new InverseDistanceWeightingFactory(distance);
+        ColorCalculator colorCalculator = new AbsoluteValueLevelColorCalculator();
+        SingleZoomDataPlotter zoomSpecificDataPlotter = new SingleZoomDataPlotterImpl(imageTileSaver, pointValueCalculatorFactory, colorCalculator);
+        int maxZoom = 6;
+        SimpleDataPlotter simpleDataPlotter = new SimpleDataPlotter(zoomSpecificDataPlotter, duplicatePointRemover, duplicatePositionRemover, maxZoom);
+        List<LatLng> outline = loadFrenchBorder();
+        simpleDataPlotter.plot(loadFrData(), outline);
+    }
+
+    private Set<Point<LatLng>> loadFrData() throws IOException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("fr_population.txt").getFile());
+        ObjectMapper objectMapper = new ObjectMapper();
+        Set<DataPoint> points = objectMapper.readValue(file, new TypeReference<HashSet<DataPoint>>() {
+        });
+        return points.stream()
+                .map(point -> new Point<>(new LatLng(point.getLat(), point.getLng()), point.getValue()))
+                .collect(toSet());
     }
 
     private Collection<Point<LatLng>> randomPoints() {
@@ -80,5 +109,39 @@ public class SimpleDataPlotterTest {
             throw new RuntimeException(e);
         }
         return result;
+    }
+
+    private List<LatLng> loadFrenchBorder() {
+        List<LatLng> result = new ArrayList<>();
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("fr_coords.kml").getFile());
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] lngLat = line.split(",");
+                result.add(new LatLng(Double.parseDouble(lngLat[1]), Double.parseDouble(lngLat[0])));
+            }
+            scanner.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return result;
+    }
+
+    @Test
+    public void testJak() {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("fr.kml").getFile());
+        Kml kml = Kml.unmarshal(file);
+        kml.getFeature();
+        ((MultiGeometry)((Placemark)((Folder)((Document)kml.getFeature()).getFeature().get(0)).getFeature().get(0)).getGeometry()).getGeometry();
+    }
+
+    @Test
+    public void testGeoJson() throws IOException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("fr.json").getFile());
+        FeatureCollection featureCollection = new ObjectMapper().readValue(file, FeatureCollection.class);
+        featureCollection.getFeatures();
     }
 }
