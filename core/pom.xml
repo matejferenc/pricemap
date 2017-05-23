@@ -41,8 +41,30 @@
             <artifactId>geojson-jackson</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.locationtech.jts</groupId>
+            <artifactId>jts-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.locationtech.jts.io</groupId>
+            <artifactId>jts-io-common</artifactId>
+        </dependency>
 
 
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>repo.locationtech.org</id>
+            <name>JTS Repository - Releases</name>
+            <url>http://repo.locationtech.org/content/repositories/jts-snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
 </project>

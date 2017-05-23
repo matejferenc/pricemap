@@ -1,7 +1,7 @@
 package com.averagemap.core.generator.filling;
 
-import com.averagemap.core.coordinates.GoogleMapsPosition;
-import com.averagemap.core.coordinates.GoogleMapsTile;
+import com.averagemap.core.coordinates.model.GoogleMapsPosition;
+import com.averagemap.core.coordinates.model.GoogleMapsTile;
 import com.averagemap.core.valueCalculator.PointValueCalculator;
 import com.averagemap.core.valueCalculator.factory.PointValueCalculatorFactory;
 

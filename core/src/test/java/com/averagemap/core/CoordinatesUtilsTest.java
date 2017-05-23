@@ -1,9 +1,9 @@
 package com.averagemap.core;
 
-import com.averagemap.core.coordinates.GoogleMapsPosition;
-import com.averagemap.core.coordinates.GoogleMapsTile;
-import com.averagemap.core.coordinates.LatLng;
-import com.averagemap.core.coordinates.TilesArea;
+import com.averagemap.core.coordinates.model.GoogleMapsPosition;
+import com.averagemap.core.coordinates.model.GoogleMapsTile;
+import com.averagemap.core.coordinates.model.LatLng;
+import com.averagemap.core.coordinates.model.TilesArea;
 import org.junit.Test;
 
 import java.util.ArrayList;

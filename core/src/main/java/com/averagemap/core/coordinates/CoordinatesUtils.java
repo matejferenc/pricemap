@@ -1,5 +1,10 @@
 package com.averagemap.core.coordinates;
 
+import com.averagemap.core.coordinates.model.GoogleMapsPosition;
+import com.averagemap.core.coordinates.model.GoogleMapsTile;
+import com.averagemap.core.coordinates.model.LatLng;
+import com.averagemap.core.coordinates.model.TilesArea;
+
 import java.util.Collection;
 
 import static java.lang.Integer.MAX_VALUE;

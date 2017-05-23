@@ -1,7 +1,7 @@
 package com.averagemap.core.average;
 
-import com.averagemap.core.coordinates.Point;
-import com.averagemap.core.coordinates.Position2D;
+import com.averagemap.core.coordinates.model.Point;
+import com.averagemap.core.coordinates.model.Position2D;
 
 import java.util.Collection;
 

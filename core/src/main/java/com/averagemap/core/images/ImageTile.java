@@ -1,6 +1,6 @@
 package com.averagemap.core.images;
 
-import com.averagemap.core.coordinates.GoogleMapsTile;
+import com.averagemap.core.coordinates.model.GoogleMapsTile;
 
 import java.awt.image.BufferedImage;
 

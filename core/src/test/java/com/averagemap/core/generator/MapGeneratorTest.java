@@ -1,9 +1,9 @@
 package com.averagemap.core.generator;
 
 import com.averagemap.core.average.SimpleSquareAverageCalculator;
-import com.averagemap.core.coordinates.DataPoint;
-import com.averagemap.core.coordinates.LatLng;
-import com.averagemap.core.coordinates.Point;
+import com.averagemap.core.coordinates.model.DataPoint;
+import com.averagemap.core.coordinates.model.LatLng;
+import com.averagemap.core.coordinates.model.Point;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;

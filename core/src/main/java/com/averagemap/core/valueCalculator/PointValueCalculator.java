@@ -1,6 +1,6 @@
 package com.averagemap.core.valueCalculator;
 
-import com.averagemap.core.coordinates.GoogleMapsPosition;
+import com.averagemap.core.coordinates.model.GoogleMapsPosition;
 
 public interface PointValueCalculator {
 

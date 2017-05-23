@@ -1,7 +1,7 @@
 package com.averagemap.core.valueCalculator;
 
-import com.averagemap.core.coordinates.GoogleMapsPosition;
-import com.averagemap.core.coordinates.Point;
+import com.averagemap.core.coordinates.model.GoogleMapsPosition;
+import com.averagemap.core.coordinates.model.Point;
 import com.averagemap.core.coordinates.distance.Distance;
 import javafx.util.Pair;
 

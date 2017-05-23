@@ -1,6 +1,6 @@
 package com.averagemap.core.coordinates.distance;
 
-import com.averagemap.core.coordinates.GoogleMapsPosition;
+import com.averagemap.core.coordinates.model.GoogleMapsPosition;
 
 public class EuclidDistance implements Distance {
 

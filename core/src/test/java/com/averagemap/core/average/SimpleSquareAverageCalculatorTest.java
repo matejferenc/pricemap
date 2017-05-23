@@ -1,7 +1,7 @@
 package com.averagemap.core.average;
 
-import com.averagemap.core.coordinates.LatLng;
-import com.averagemap.core.coordinates.Point;
+import com.averagemap.core.coordinates.model.LatLng;
+import com.averagemap.core.coordinates.model.Point;
 import org.junit.Test;
 
 import java.util.ArrayList;

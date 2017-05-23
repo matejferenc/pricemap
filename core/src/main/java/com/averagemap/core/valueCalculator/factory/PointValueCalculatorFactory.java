@@ -1,8 +1,8 @@
 package com.averagemap.core.valueCalculator.factory;
 
-import com.averagemap.core.coordinates.GoogleMapsPosition;
-import com.averagemap.core.coordinates.GoogleMapsTile;
-import com.averagemap.core.coordinates.Point;
+import com.averagemap.core.coordinates.model.GoogleMapsPosition;
+import com.averagemap.core.coordinates.model.GoogleMapsTile;
+import com.averagemap.core.coordinates.model.Point;
 import com.averagemap.core.valueCalculator.PointValueCalculator;
 
 import java.util.Collection;
