@@ -3,10 +3,10 @@ package com.averagemap.core.generator.plotter;
 import com.averagemap.core.coordinates.model.GoogleMapsPosition;
 import com.averagemap.core.coordinates.model.LatLng;
 import com.averagemap.core.coordinates.model.Point;
+import com.averagemap.core.coordinates.model.border.MultiPolygon;
 import com.averagemap.core.duplicate.DuplicateRemover;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.IntStream;
 
 import static com.averagemap.core.coordinates.CoordinatesUtils.latLngToPosition;
@@ -30,25 +30,22 @@ public class DataPlotterImpl implements DataPlotter {
     }
 
     @Override
-    public void plot(Collection<Point<LatLng>> points, List<LatLng> outline) {
+    public void plot(Collection<Point<LatLng>> points, MultiPolygon<LatLng> border) {
         IntStream.rangeClosed(0, maxZoom)
                 .forEach(zoom -> {
                     long start = System.currentTimeMillis();
-                    generateImageTilesForOneZoom(points, outline, zoom);
+                    generateImageTilesForOneZoom(points, border, zoom);
                     long end = System.currentTimeMillis();
                     System.out.println("Zoom " + zoom + " execution time: " + (end - start) / 1000 + " seconds");
                 });
     }
 
-    private void generateImageTilesForOneZoom(Collection<Point<LatLng>> points, List<LatLng> outline, int zoom) {
+    private void generateImageTilesForOneZoom(Collection<Point<LatLng>> points, MultiPolygon<LatLng> border, int zoom) {
         Collection<Point<GoogleMapsPosition>> pointList = duplicatePointRemover.removeDuplicatePoints(
                 points.stream()
                         .map(point -> new Point<>(latLngToPosition(point.getPosition(), zoom), point.getValue()))
                         .collect(toList()));
-        List<GoogleMapsPosition> zoomSpecificOutline = duplicatePositionRemover.removeDuplicatePositions(
-                outline.stream()
-                        .map(position -> latLngToPosition(position, zoom))
-                        .collect(toList()));
-        singleZoomDataPlotter.plot(pointList, zoomSpecificOutline, zoom);
+        MultiPolygon<GoogleMapsPosition> zoomSpecificBorder = duplicatePositionRemover.removeDuplicatePositions(latLngToPosition(border, zoom));
+        singleZoomDataPlotter.plot(pointList, zoomSpecificBorder, zoom);
     }
 }

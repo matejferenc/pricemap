@@ -4,11 +4,15 @@ import com.averagemap.core.coordinates.model.GoogleMapsPosition;
 import com.averagemap.core.coordinates.model.GoogleMapsTile;
 import com.averagemap.core.coordinates.model.LatLng;
 import com.averagemap.core.coordinates.model.TilesArea;
+import com.averagemap.core.coordinates.model.border.LinearRing;
+import com.averagemap.core.coordinates.model.border.MultiPolygon;
+import com.averagemap.core.coordinates.model.border.Polygon;
 
 import java.util.Collection;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Integer.MIN_VALUE;
+import static java.util.stream.Collectors.toList;
 
 public class CoordinatesUtils {
 
@@ -90,6 +94,32 @@ public class CoordinatesUtils {
                 positionToTile(new GoogleMapsPosition(right, bottom, zoom)));
     }
 
+    public static TilesArea getEncompassingArea(MultiPolygon<GoogleMapsPosition> border) {
+//        FIXME
+//        final int zoom = assertZoomLevelIsTheSame(border);
+        int left = MAX_VALUE;
+        int top = MAX_VALUE;
+        int right = MIN_VALUE;
+        int bottom = MIN_VALUE;
+        for (GoogleMapsPosition googleMapsPosition : border) {
+            int x = googleMapsPosition.getX();
+            if (x < left) {
+                left = x;
+            } else if (x > right) {
+                right = x;
+            }
+            int y = googleMapsPosition.getY();
+            if (y < top) {
+                top = y;
+            } else if (y > bottom) {
+                bottom = y;
+            }
+        }
+        return new TilesArea(
+                positionToTile(new GoogleMapsPosition(left, top, zoom)),
+                positionToTile(new GoogleMapsPosition(right, bottom, zoom)));
+    }
+
     private static int assertZoomLevelIsTheSame(Collection<GoogleMapsPosition> positions) {
         final int zoomOfFirst = positions.stream()
                 .findFirst()
@@ -102,5 +132,22 @@ public class CoordinatesUtils {
             throw new IllegalArgumentException("zoom levels different");
         }
         return zoomOfFirst;
+    }
+
+    public static MultiPolygon<GoogleMapsPosition> latLngToPosition(MultiPolygon<LatLng> multiPolygon, int zoom) {
+        return new MultiPolygon<>(multiPolygon.getPolygons().stream()
+                .map(polygon -> new Polygon<>(latLngToPosition(polygon.getExteriorRing(), zoom),
+                        polygon.getHoles().stream()
+                                .map(hole -> latLngToPosition(hole, zoom))
+                                .collect(toList()))
+                )
+                .collect(toList()));
+    }
+
+    private static LinearRing<GoogleMapsPosition> latLngToPosition(LinearRing<LatLng> ring, int zoom) {
+        return new LinearRing<>(
+                ring.getLineString().stream()
+                        .map(latLng -> latLngToPosition(latLng, zoom))
+                        .collect(toList()));
     }
 }

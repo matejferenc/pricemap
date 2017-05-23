@@ -3,6 +3,7 @@ package com.averagemap.core.generator.plotter;
 import com.averagemap.core.colorCalculator.ColorCalculator;
 import com.averagemap.core.coordinates.model.*;
 import com.averagemap.core.coordinates.model.Point;
+import com.averagemap.core.coordinates.model.border.MultiPolygon;
 import com.averagemap.core.generator.filling.DefaultSquareFillingStrategy;
 import com.averagemap.core.generator.filling.EmptySquareFillingStrategy;
 import com.averagemap.core.generator.filling.FullSquareFillingStrategy;
@@ -39,11 +40,11 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
     }
 
     @Override
-    public void plot(Collection<Point<GoogleMapsPosition>> points, List<GoogleMapsPosition> outline, int zoom) {
-        TilesArea tilesArea = getEncompassingArea(outline);
+    public void plot(Collection<Point<GoogleMapsPosition>> points, MultiPolygon<GoogleMapsPosition> border, int zoom) {
+        TilesArea tilesArea = getEncompassingArea(border);
         Pair<Double, Double> minAndMaxValue = countMinAndMaxValue(points);
         pointValueCalculatorFactory.setUp(points);
-        GeneralPath outlinePath = createOutline(outline);
+        GeneralPath outlinePath = createOutline(border);
         tilesArea.stream()
                 .parallel()
                 .forEach(tile -> {

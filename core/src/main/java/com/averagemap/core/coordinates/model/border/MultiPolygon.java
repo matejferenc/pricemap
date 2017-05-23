@@ -1,16 +1,18 @@
 package com.averagemap.core.coordinates.model.border;
 
+import com.averagemap.core.coordinates.model.Position2D;
+
 import java.util.List;
 
-public class MultiPolygon {
+public class MultiPolygon<T extends Position2D> {
 
-    private final List<Polygon> polygons;
+    private final List<Polygon<T>> polygons;
 
-    public MultiPolygon(List<Polygon> polygons) {
+    public MultiPolygon(List<Polygon<T>> polygons) {
         this.polygons = polygons;
     }
 
-    public List<Polygon> getPolygons() {
+    public List<Polygon<T>> getPolygons() {
         return polygons;
     }
 }
