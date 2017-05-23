@@ -44,11 +44,11 @@ public class LatLng implements Position2D<Double> {
 
     @Override
     public Double getX() {
-        return lat;
+        return lng;
     }
 
     @Override
     public Double getY() {
-        return lng;
+        return lat;
     }
 }

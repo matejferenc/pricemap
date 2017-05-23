@@ -46,13 +46,19 @@ public class JtsTest {
         double width = right - left;
         double height = top - bottom;
 
+        Random random = new Random(0);
+
+        long start = System.currentTimeMillis();
+
         for (int i = 0; i < 65536; i ++) {
-            double longitude = Math.random() * width + left;
-            double latitude = Math.random() * height + bottom;
+            double longitude = random.nextDouble() * width + left;
+            double latitude = random.nextDouble() * height + bottom;
             LngLatAlt point = new LngLatAlt(longitude, latitude, 0);
             boolean inside = Inside.isInside(point, (MultiPolygon) geometry);
-            System.out.println("inside: " + inside);
+//            System.out.println("inside: " + inside);
         }
+        long end = System.currentTimeMillis();
+        System.out.println("execution time: " + (end - start) + " milliseconds");
     }
 
     private Area<LatLng> getArea(MultiPolygon multiPolygon) {
