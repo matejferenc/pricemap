@@ -94,32 +94,6 @@ public class CoordinatesUtils {
                 positionToTile(new GoogleMapsPosition(right, bottom, zoom)));
     }
 
-    public static TilesArea getEncompassingArea(MultiPolygon<GoogleMapsPosition> border) {
-//        FIXME
-//        final int zoom = assertZoomLevelIsTheSame(border);
-        int left = MAX_VALUE;
-        int top = MAX_VALUE;
-        int right = MIN_VALUE;
-        int bottom = MIN_VALUE;
-        for (GoogleMapsPosition googleMapsPosition : border) {
-            int x = googleMapsPosition.getX();
-            if (x < left) {
-                left = x;
-            } else if (x > right) {
-                right = x;
-            }
-            int y = googleMapsPosition.getY();
-            if (y < top) {
-                top = y;
-            } else if (y > bottom) {
-                bottom = y;
-            }
-        }
-        return new TilesArea(
-                positionToTile(new GoogleMapsPosition(left, top, zoom)),
-                positionToTile(new GoogleMapsPosition(right, bottom, zoom)));
-    }
-
     private static int assertZoomLevelIsTheSame(Collection<GoogleMapsPosition> positions) {
         final int zoomOfFirst = positions.stream()
                 .findFirst()
@@ -134,20 +108,4 @@ public class CoordinatesUtils {
         return zoomOfFirst;
     }
 
-    public static MultiPolygon<GoogleMapsPosition> latLngToPosition(MultiPolygon<LatLng> multiPolygon, int zoom) {
-        return new MultiPolygon<>(multiPolygon.getPolygons().stream()
-                .map(polygon -> new Polygon<>(latLngToPosition(polygon.getExteriorRing(), zoom),
-                        polygon.getHoles().stream()
-                                .map(hole -> latLngToPosition(hole, zoom))
-                                .collect(toList()))
-                )
-                .collect(toList()));
-    }
-
-    private static LinearRing<GoogleMapsPosition> latLngToPosition(LinearRing<LatLng> ring, int zoom) {
-        return new LinearRing<>(
-                ring.getLineString().stream()
-                        .map(latLng -> latLngToPosition(latLng, zoom))
-                        .collect(toList()));
-    }
 }
