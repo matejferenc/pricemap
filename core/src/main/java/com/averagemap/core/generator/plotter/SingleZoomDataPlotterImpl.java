@@ -3,7 +3,8 @@ package com.averagemap.core.generator.plotter;
 import com.averagemap.core.colorCalculator.ColorCalculator;
 import com.averagemap.core.coordinates.model.*;
 import com.averagemap.core.coordinates.model.Point;
-import com.averagemap.core.coordinates.model.border.MultiPolygon;
+import com.averagemap.core.coordinates.model.border.Border;
+import com.averagemap.core.coordinates.model.border.ZoomSpecificBorder;
 import com.averagemap.core.generator.filling.DefaultSquareFillingStrategy;
 import com.averagemap.core.generator.filling.EmptySquareFillingStrategy;
 import com.averagemap.core.generator.filling.FullSquareFillingStrategy;
@@ -24,7 +25,6 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.averagemap.core.coordinates.CoordinatesUtils.TILE_SIZE;
-import static com.averagemap.core.coordinates.CoordinatesUtils.getEncompassingArea;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 
 public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
@@ -40,25 +40,25 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
     }
 
     @Override
-    public void plot(Collection<Point<GoogleMapsPosition>> points, MultiPolygon<GoogleMapsPosition> border, int zoom) {
-        TilesArea tilesArea = getEncompassingArea(border);
+    public void plot(Collection<Point<GoogleMapsPosition>> points, ZoomSpecificBorder zoomSpecificBorder, int zoom) {
+        TilesArea tilesArea = zoomSpecificBorder.getEncompassingArea();
         Pair<Double, Double> minAndMaxValue = countMinAndMaxValue(points);
         pointValueCalculatorFactory.setUp(points);
-        GeneralPath outlinePath = createOutline(border);
+//        GeneralPath outlinePath = createOutline(zoomSpecificBorder);
         tilesArea.stream()
                 .parallel()
                 .forEach(tile -> {
-                    BufferedImage image = drawImage(tile, points, outlinePath, minAndMaxValue);
+                    BufferedImage image = drawImage(tile, points, zoomSpecificBorder, minAndMaxValue);
                     ImageTile imageTile = new ImageTile(tile, image);
                     imageTileSaver.saveTile(imageTile);
                 });
     }
 
-    private BufferedImage drawImage(GoogleMapsTile tile, Collection<Point<GoogleMapsPosition>> uniquePoints, GeneralPath outlinePath, Pair<Double, Double> minAndMaxValue) {
+    private BufferedImage drawImage(GoogleMapsTile tile, Collection<Point<GoogleMapsPosition>> uniquePoints, ZoomSpecificBorder zoomSpecificBorder, Pair<Double, Double> minAndMaxValue) {
         BufferedImage image = new BufferedImage(TILE_SIZE, TILE_SIZE, TYPE_INT_ARGB);
         Graphics2D graphics2D = drawEmptySquare(image);
-        SquareFillingStrategy squareFillingStrategy = pickStrategy(tile, outlinePath);
-        Area drawingArea = getDrawingArea(tile, outlinePath);
+        SquareFillingStrategy squareFillingStrategy = pickStrategy(tile, zoomSpecificBorder);
+        Area drawingArea = getDrawingArea(tile, zoomSpecificBorder);
         squareFillingStrategy.fill(tile,
                 pointValueCalculatorFactory,
                 (PointValueCalculator pointValueCalculator, GoogleMapsPosition pixelPosition) -> drawPixel(image, pointValueCalculator, pixelPosition, minAndMaxValue),
@@ -95,13 +95,13 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
                 });
     }
 
-    private SquareFillingStrategy pickStrategy(GoogleMapsTile tile, GeneralPath outlinePath) {
+    private SquareFillingStrategy pickStrategy(GoogleMapsTile tile, ZoomSpecificBorder zoomSpecificBorder) {
         int left = tile.getX() * TILE_SIZE;
         int top = tile.getY() * TILE_SIZE;
-        boolean wholeTileIsInOutlinePath = outlinePath.contains(left, top, TILE_SIZE - 1, TILE_SIZE - 1);
+        boolean wholeTileIsInOutlinePath = zoomSpecificBorder.contains(left, top, TILE_SIZE - 1, TILE_SIZE - 1);
         if (wholeTileIsInOutlinePath) {
             return new FullSquareFillingStrategy();
-        } else if (outlinePath.intersects(left, top, TILE_SIZE - 1, TILE_SIZE - 1)) {
+        } else if (zoomSpecificBorder.intersects(left, top, TILE_SIZE - 1, TILE_SIZE - 1)) {
             return new DefaultSquareFillingStrategy();
         } else {
             return new EmptySquareFillingStrategy();
