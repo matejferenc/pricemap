@@ -2,7 +2,11 @@ package com.averagemap.core.coordinates.model.border;
 
 import com.averagemap.core.coordinates.CoordinatesUtils;
 import com.averagemap.core.coordinates.model.GoogleMapsPosition;
+import com.averagemap.core.coordinates.model.GoogleMapsTile;
 import com.averagemap.core.coordinates.model.TilesArea;
+
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Integer.MIN_VALUE;
@@ -59,5 +63,13 @@ public class ZoomSpecificBorder {
             throw new IllegalArgumentException("empty");
         }
         return zoom;
+    }
+
+    public BorderInTile cropToTile(GoogleMapsTile tile) {
+        GeneralPath clip = new GeneralPath(Path2D.WIND_EVEN_ODD);
+        GoogleMapsPosition first = outline.get(0);
+        clip.moveTo(first.getX(), first.getY());
+        outline.forEach(position -> clip.lineTo(position.getX(), position.getY()));
+        clip.closePath();
     }
 }

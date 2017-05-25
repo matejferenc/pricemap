@@ -4,6 +4,7 @@ import com.averagemap.core.colorCalculator.ColorCalculator;
 import com.averagemap.core.coordinates.model.*;
 import com.averagemap.core.coordinates.model.Point;
 import com.averagemap.core.coordinates.model.border.Border;
+import com.averagemap.core.coordinates.model.border.BorderInTile;
 import com.averagemap.core.coordinates.model.border.ZoomSpecificBorder;
 import com.averagemap.core.generator.filling.DefaultSquareFillingStrategy;
 import com.averagemap.core.generator.filling.EmptySquareFillingStrategy;
@@ -59,6 +60,7 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
         Graphics2D graphics2D = drawEmptySquare(image);
         SquareFillingStrategy squareFillingStrategy = pickStrategy(tile, zoomSpecificBorder);
         Area drawingArea = getDrawingArea(tile, zoomSpecificBorder);
+        BorderInTile borderInTile = zoomSpecificBorder.cropToTile(tile);
         squareFillingStrategy.fill(tile,
                 pointValueCalculatorFactory,
                 (PointValueCalculator pointValueCalculator, GoogleMapsPosition pixelPosition) -> drawPixel(image, pointValueCalculator, pixelPosition, minAndMaxValue),
