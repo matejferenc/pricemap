@@ -59,12 +59,12 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
         BufferedImage image = new BufferedImage(TILE_SIZE, TILE_SIZE, TYPE_INT_ARGB);
         Graphics2D graphics2D = drawEmptySquare(image);
         SquareFillingStrategy squareFillingStrategy = pickStrategy(tile, zoomSpecificBorder);
-        Area drawingArea = getDrawingArea(tile, zoomSpecificBorder);
+//        BorderInTile drawingArea = null;//getDrawingArea(tile, zoomSpecificBorder);
         BorderInTile borderInTile = zoomSpecificBorder.cropToTile(tile);
         squareFillingStrategy.fill(tile,
                 pointValueCalculatorFactory,
                 (PointValueCalculator pointValueCalculator, GoogleMapsPosition pixelPosition) -> drawPixel(image, pointValueCalculator, pixelPosition, minAndMaxValue),
-                (GoogleMapsPosition pixelPosition) -> shouldDraw(drawingArea, pixelPosition));
+                (GoogleMapsPosition pixelPosition) -> shouldDraw(borderInTile, pixelPosition));
         drawPointsAsPixels(tile, uniquePoints, graphics2D);
         return image;
     }
@@ -100,18 +100,19 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
     private SquareFillingStrategy pickStrategy(GoogleMapsTile tile, ZoomSpecificBorder zoomSpecificBorder) {
         int left = tile.getX() * TILE_SIZE;
         int top = tile.getY() * TILE_SIZE;
-        boolean wholeTileIsInOutlinePath = zoomSpecificBorder.contains(left, top, TILE_SIZE - 1, TILE_SIZE - 1);
+        boolean wholeTileIsInOutlinePath = true;//zoomSpecificBorder.contains(left, top, TILE_SIZE - 1, TILE_SIZE - 1);
         if (wholeTileIsInOutlinePath) {
             return new FullSquareFillingStrategy();
-        } else if (zoomSpecificBorder.intersects(left, top, TILE_SIZE - 1, TILE_SIZE - 1)) {
+        } else if (false){//zoomSpecificBorder.intersects(left, top, TILE_SIZE - 1, TILE_SIZE - 1)) {
             return new DefaultSquareFillingStrategy();
         } else {
             return new EmptySquareFillingStrategy();
         }
     }
 
-    private boolean shouldDraw(Area outlinePath, GoogleMapsPosition pixelPosition) {
-        return outlinePath.contains(pixelPosition.getX(), pixelPosition.getY());
+    private boolean shouldDraw(BorderInTile outlinePath, GoogleMapsPosition pixelPosition) {
+//        return outlinePath.contains(pixelPosition.getX(), pixelPosition.getY());
+        return true;
     }
 
     private Void drawPixel(BufferedImage image, PointValueCalculator pointValueCalculatorForTile, GoogleMapsPosition pixelPosition, Pair<Double, Double> minAndMaxValue) {

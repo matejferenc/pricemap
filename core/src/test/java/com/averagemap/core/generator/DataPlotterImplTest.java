@@ -1,14 +1,15 @@
 package com.averagemap.core.generator;
 
-import com.averagemap.core.CoordinatesUtilsTest;
 import com.averagemap.core.colorCalculator.AbsoluteValueLevelColorCalculator;
 import com.averagemap.core.colorCalculator.ColorCalculator;
+import com.averagemap.core.coordinates.distance.Distance;
+import com.averagemap.core.coordinates.distance.EuclidDistance;
 import com.averagemap.core.coordinates.model.DataPoint;
 import com.averagemap.core.coordinates.model.GoogleMapsPosition;
 import com.averagemap.core.coordinates.model.LatLng;
 import com.averagemap.core.coordinates.model.Point;
-import com.averagemap.core.coordinates.distance.Distance;
-import com.averagemap.core.coordinates.distance.EuclidDistance;
+import com.averagemap.core.coordinates.model.border.Border;
+import com.averagemap.core.coordinates.model.border.JacksonConverter;
 import com.averagemap.core.duplicate.AverageResultDuplicateRemover;
 import com.averagemap.core.duplicate.DuplicateRemover;
 import com.averagemap.core.duplicate.SimpleDuplicateRemover;
@@ -22,11 +23,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.micromata.opengis.kml.v_2_2_0.*;
 import org.geojson.FeatureCollection;
+import org.geojson.GeoJsonObject;
+import org.geojson.MultiPolygon;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -44,9 +48,9 @@ public class DataPlotterImplTest {
         ColorCalculator colorCalculator = new AbsoluteValueLevelColorCalculator();
         SingleZoomDataPlotter zoomSpecificDataPlotter = new SingleZoomDataPlotterImpl(imageTileSaver, pointValueCalculatorFactory, colorCalculator);
         int maxZoom = 12;
-        DataPlotterImpl dataPlotterImpl = new DataPlotterImpl(zoomSpecificDataPlotter, duplicatePointRemover, duplicatePositionRemover, maxZoom);
-        List<LatLng> outline = loadCzechRepublicBorder();
-        dataPlotterImpl.plot(loadData(), outline);
+        DataPlotterImpl dataPlotterImpl = new DataPlotterImpl(zoomSpecificDataPlotter, duplicatePointRemover, maxZoom);
+        Border border = loadCzechRepublicBorder();
+        dataPlotterImpl.plot(loadData(), border);
     }
 
     @Test
@@ -60,9 +64,9 @@ public class DataPlotterImplTest {
         ColorCalculator colorCalculator = new AbsoluteValueLevelColorCalculator();
         SingleZoomDataPlotter zoomSpecificDataPlotter = new SingleZoomDataPlotterImpl(imageTileSaver, pointValueCalculatorFactory, colorCalculator);
         int maxZoom = 6;
-        DataPlotterImpl dataPlotterImpl = new DataPlotterImpl(zoomSpecificDataPlotter, duplicatePointRemover, duplicatePositionRemover, maxZoom);
-        List<LatLng> outline = loadFrenchBorder();
-        dataPlotterImpl.plot(loadFrData(), outline);
+        DataPlotterImpl dataPlotterImpl = new DataPlotterImpl(zoomSpecificDataPlotter, duplicatePointRemover, maxZoom);
+        Border border = loadFrenchBorder();
+        dataPlotterImpl.plot(loadFrData(), border);
     }
 
     private Set<Point<LatLng>> loadFrData() throws IOException {
@@ -74,14 +78,6 @@ public class DataPlotterImplTest {
         return points.stream()
                 .map(point -> new Point<>(new LatLng(point.getLat(), point.getLng()), point.getValue()))
                 .collect(toSet());
-    }
-
-    private Collection<Point<LatLng>> randomPoints() {
-        List<Point<LatLng>> points = new ArrayList<>();
-        points.add(new Point<>(CoordinatesUtilsTest.BRNO, 100));
-        points.add(new Point<>(CoordinatesUtilsTest.HODONIN, 101));
-        points.add(new Point<>(CoordinatesUtilsTest.QUADRIO, 102));
-        return points;
     }
 
     private Set<Point<LatLng>> loadData() throws IOException {
@@ -97,38 +93,20 @@ public class DataPlotterImplTest {
                 .collect(toSet());
     }
 
-    private List<LatLng> loadCzechRepublicBorder() {
-        List<LatLng> result = new ArrayList<>();
+    private Border loadCzechRepublicBorder() throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource("cz_coords.kml").getFile());
-        try (Scanner scanner = new Scanner(file)) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                String[] lngLat = line.split(",");
-                result.add(new LatLng(Double.parseDouble(lngLat[1]), Double.parseDouble(lngLat[0])));
-            }
-            scanner.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return result;
+        File file = new File(classLoader.getResource("fr.json").getFile());
+        FeatureCollection featureCollection = new ObjectMapper().readValue(file, FeatureCollection.class);
+        GeoJsonObject geometry = featureCollection.getFeatures().get(0).getGeometry();
+        return new JacksonConverter().convert((MultiPolygon) geometry);
     }
 
-    private List<LatLng> loadFrenchBorder() {
-        List<LatLng> result = new ArrayList<>();
+    private Border loadFrenchBorder() throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource("fr_coords.kml").getFile());
-        try (Scanner scanner = new Scanner(file)) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                String[] lngLat = line.split(",");
-                result.add(new LatLng(Double.parseDouble(lngLat[1]), Double.parseDouble(lngLat[0])));
-            }
-            scanner.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return result;
+        File file = new File(classLoader.getResource("fr.json").getFile());
+        FeatureCollection featureCollection = new ObjectMapper().readValue(file, FeatureCollection.class);
+        GeoJsonObject geometry = featureCollection.getFeatures().get(0).getGeometry();
+        return new JacksonConverter().convert((MultiPolygon) geometry);
     }
 
     @Test
@@ -137,7 +115,7 @@ public class DataPlotterImplTest {
         File file = new File(classLoader.getResource("fr.kml").getFile());
         Kml kml = Kml.unmarshal(file);
         kml.getFeature();
-        ((MultiGeometry)((Placemark)((Folder)((Document)kml.getFeature()).getFeature().get(0)).getFeature().get(0)).getGeometry()).getGeometry();
+        ((MultiGeometry) ((Placemark) ((Folder) ((Document) kml.getFeature()).getFeature().get(0)).getFeature().get(0)).getGeometry()).getGeometry();
     }
 
     @Test
