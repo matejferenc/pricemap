@@ -15,6 +15,7 @@ import java.util.List;
 import static com.averagemap.core.coordinates.CoordinatesUtils.TILE_SIZE;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Integer.MIN_VALUE;
+import static java.util.stream.Collectors.toList;
 
 public class ZoomSpecificBorder {
 
@@ -66,7 +67,7 @@ public class ZoomSpecificBorder {
                 }
             }
         }
-        if (zoom == null ){
+        if (zoom == null) {
             throw new IllegalArgumentException("empty");
         }
         return zoom;
@@ -95,12 +96,24 @@ public class ZoomSpecificBorder {
     public BorderInTile cropToTile(GoogleMapsTile tile) {
         Rectangle2D.Double tileRectangle = new Rectangle2D.Double(tile.getX() * TILE_SIZE, tile.getY() * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 
-        for (PathPolygon pathPolygon : pathMultiPolygon.pathPolygons) {
-            if (pathPolygon.exteriorRing.intersects(tileRectangle) || pathPolygon.exteriorRing.contains(tileRectangle)) {
-                Area area = new Area(pathPolygon.exteriorRing);
-                area.intersect(new Area(tileRectangle));
-            }
-        }
+        List<PolygonInTile> polygonsInTile = pathMultiPolygon.pathPolygons.stream()
+                .filter(pathPolygon -> pathPolygon.exteriorRing.intersects(tileRectangle) || pathPolygon.exteriorRing.contains(tileRectangle))
+                .map(pathPolygon -> {
+                    Area exteriorRingArea = new Area(pathPolygon.exteriorRing);
+                    exteriorRingArea.intersect(new Area(tileRectangle));
+                    List<Area> holeAreas = pathPolygon.holes.stream()
+                            .filter(hole -> hole.intersects(tileRectangle) || hole.contains(tileRectangle))
+                            .map(hole -> {
+                                Area holeArea = new Area(hole);
+                                holeArea.intersect(new Area(tileRectangle));
+                                return holeArea;
+                            })
+                            .collect(toList());
+                    return new PolygonInTile(exteriorRingArea, holeAreas);
+                })
+                .collect(toList());
+        MultiPolygonInTile multiPolygonInTile = new MultiPolygonInTile(polygonsInTile);
+        return new BorderInTile(multiPolygonInTile);
     }
 
     private static class PathMultiPolygon {

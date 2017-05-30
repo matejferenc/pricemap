@@ -10,4 +10,24 @@ public class PolygonInTile {
 
     private List<Area> holes = new ArrayList<>();
 
+    public PolygonInTile(Area exteriorRing, List<Area> holes) {
+        this.exteriorRing = exteriorRing;
+        this.holes = holes;
+    }
+
+    public Area getExteriorRing() {
+        return exteriorRing;
+    }
+
+    public void setExteriorRing(Area exteriorRing) {
+        this.exteriorRing = exteriorRing;
+    }
+
+    public List<Area> getHoles() {
+        return holes;
+    }
+
+    public void setHoles(List<Area> holes) {
+        this.holes = holes;
+    }
 }

@@ -95,7 +95,7 @@ public class DataPlotterImplTest {
 
     private Border loadCzechRepublicBorder() throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource("fr.json").getFile());
+        File file = new File(classLoader.getResource("cz.json").getFile());
         FeatureCollection featureCollection = new ObjectMapper().readValue(file, FeatureCollection.class);
         GeoJsonObject geometry = featureCollection.getFeatures().get(0).getGeometry();
         return new JacksonConverter().convert((MultiPolygon) geometry);

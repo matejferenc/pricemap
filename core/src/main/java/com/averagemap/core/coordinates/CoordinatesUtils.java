@@ -4,15 +4,13 @@ import com.averagemap.core.coordinates.model.GoogleMapsPosition;
 import com.averagemap.core.coordinates.model.GoogleMapsTile;
 import com.averagemap.core.coordinates.model.LatLng;
 import com.averagemap.core.coordinates.model.TilesArea;
-import com.averagemap.core.coordinates.model.border.LinearRing;
-import com.averagemap.core.coordinates.model.border.MultiPolygon;
-import com.averagemap.core.coordinates.model.border.Polygon;
 
+import java.awt.geom.Area;
+import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Integer.MIN_VALUE;
-import static java.util.stream.Collectors.toList;
 
 public class CoordinatesUtils {
 
@@ -106,6 +104,14 @@ public class CoordinatesUtils {
             throw new IllegalArgumentException("zoom levels different");
         }
         return zoomOfFirst;
+    }
+
+    public static Area toArea(GoogleMapsTile tile) {
+        return new Area(toRectangle2D(tile));
+    }
+
+    public static Rectangle2D.Double toRectangle2D(GoogleMapsTile tile) {
+        return new Rectangle2D.Double(tile.getX() * TILE_SIZE, tile.getY() * TILE_SIZE, TILE_SIZE, TILE_SIZE / 2);
     }
 
 }

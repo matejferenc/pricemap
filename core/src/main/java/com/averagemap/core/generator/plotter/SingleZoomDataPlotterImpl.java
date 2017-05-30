@@ -58,9 +58,9 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
     private BufferedImage drawImage(GoogleMapsTile tile, Collection<Point<GoogleMapsPosition>> uniquePoints, ZoomSpecificBorder zoomSpecificBorder, Pair<Double, Double> minAndMaxValue) {
         BufferedImage image = new BufferedImage(TILE_SIZE, TILE_SIZE, TYPE_INT_ARGB);
         Graphics2D graphics2D = drawEmptySquare(image);
-        SquareFillingStrategy squareFillingStrategy = pickStrategy(tile, zoomSpecificBorder);
 //        BorderInTile drawingArea = null;//getDrawingArea(tile, zoomSpecificBorder);
         BorderInTile borderInTile = zoomSpecificBorder.cropToTile(tile);
+        SquareFillingStrategy squareFillingStrategy = pickStrategy(tile, borderInTile);
         squareFillingStrategy.fill(tile,
                 pointValueCalculatorFactory,
                 (PointValueCalculator pointValueCalculator, GoogleMapsPosition pixelPosition) -> drawPixel(image, pointValueCalculator, pixelPosition, minAndMaxValue),
@@ -97,20 +97,17 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
                 });
     }
 
-    private SquareFillingStrategy pickStrategy(GoogleMapsTile tile, ZoomSpecificBorder zoomSpecificBorder) {
-        int left = tile.getX() * TILE_SIZE;
-        int top = tile.getY() * TILE_SIZE;
-        boolean wholeTileIsInOutlinePath = true;//zoomSpecificBorder.contains(left, top, TILE_SIZE - 1, TILE_SIZE - 1);
-        if (wholeTileIsInOutlinePath) {
+    private SquareFillingStrategy pickStrategy(GoogleMapsTile tile, BorderInTile zoomSpecificBorder) {
+        if (zoomSpecificBorder.isFull(tile)) {
             return new FullSquareFillingStrategy();
-        } else if (false){//zoomSpecificBorder.intersects(left, top, TILE_SIZE - 1, TILE_SIZE - 1)) {
-            return new DefaultSquareFillingStrategy();
-        } else {
+        } else if (zoomSpecificBorder.isEmpty(tile)) {
             return new EmptySquareFillingStrategy();
+        } else {
+            return new DefaultSquareFillingStrategy();
         }
     }
 
-    private boolean shouldDraw(BorderInTile outlinePath, GoogleMapsPosition pixelPosition) {
+    private boolean shouldDraw(BorderInTile borderInTile, GoogleMapsPosition pixelPosition) {
 //        return outlinePath.contains(pixelPosition.getX(), pixelPosition.getY());
         return true;
     }
