@@ -86,7 +86,7 @@ public class ZoomSpecificBorder {
     private GeneralPath createPathFromRing(LinearRing<GoogleMapsPosition> linearRing) {
         List<GoogleMapsPosition> lineString = linearRing.getLineString();
         GeneralPath clip = new GeneralPath(Path2D.WIND_EVEN_ODD);
-        GoogleMapsPosition first = lineString.get(1);//first and last point are the same
+        GoogleMapsPosition first = lineString.get(0);
         clip.moveTo(first.getX(), first.getY());
         lineString.forEach(position -> clip.lineTo(position.getX(), position.getY()));
         clip.closePath();

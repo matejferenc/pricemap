@@ -3,7 +3,6 @@ package com.averagemap.core.generator.plotter;
 import com.averagemap.core.colorCalculator.ColorCalculator;
 import com.averagemap.core.coordinates.model.*;
 import com.averagemap.core.coordinates.model.Point;
-import com.averagemap.core.coordinates.model.border.Border;
 import com.averagemap.core.coordinates.model.border.BorderInTile;
 import com.averagemap.core.coordinates.model.border.ZoomSpecificBorder;
 import com.averagemap.core.generator.filling.DefaultSquareFillingStrategy;
@@ -46,6 +45,7 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
         Pair<Double, Double> minAndMaxValue = countMinAndMaxValue(points);
         pointValueCalculatorFactory.setUp(points);
 //        GeneralPath outlinePath = createOutline(zoomSpecificBorder);
+        zoomSpecificBorder.prepareForPlotting();
         tilesArea.stream()
                 .parallel()
                 .forEach(tile -> {
@@ -109,7 +109,7 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
 
     private boolean shouldDraw(BorderInTile borderInTile, GoogleMapsPosition pixelPosition) {
 //        return outlinePath.contains(pixelPosition.getX(), pixelPosition.getY());
-        return true;
+        return borderInTile.contains(pixelPosition);
     }
 
     private Void drawPixel(BufferedImage image, PointValueCalculator pointValueCalculatorForTile, GoogleMapsPosition pixelPosition, Pair<Double, Double> minAndMaxValue) {

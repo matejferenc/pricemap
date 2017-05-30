@@ -24,7 +24,9 @@ public class Border {
                 .map(polygon -> new Polygon<>(removeDuplicatePositions(polygon.getExteriorRing()),
                         polygon.getHoles().stream()
                                 .map(this::removeDuplicatePositions)
+                                .filter(hole -> hole.getLineString().size() >= 3)
                                 .collect(toList())))
+                .filter(polygon -> polygon.getExteriorRing().getLineString().size() >= 3)
                 .collect(toList()));
     }
 

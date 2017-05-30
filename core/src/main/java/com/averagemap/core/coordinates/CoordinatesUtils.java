@@ -111,7 +111,7 @@ public class CoordinatesUtils {
     }
 
     public static Rectangle2D.Double toRectangle2D(GoogleMapsTile tile) {
-        return new Rectangle2D.Double(tile.getX() * TILE_SIZE, tile.getY() * TILE_SIZE, TILE_SIZE, TILE_SIZE / 2);
+        return new Rectangle2D.Double(tile.getX() * TILE_SIZE, tile.getY() * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
 
 }

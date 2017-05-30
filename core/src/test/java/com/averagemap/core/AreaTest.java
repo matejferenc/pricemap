@@ -1,13 +1,14 @@
 package com.averagemap.core;
 
 import com.averagemap.core.coordinates.model.GoogleMapsTile;
-import com.averagemap.core.coordinates.model.Position2D;
 import org.junit.Test;
 
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 
 import static com.averagemap.core.coordinates.CoordinatesUtils.TILE_SIZE;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class AreaTest {
 
@@ -17,12 +18,9 @@ public class AreaTest {
         Rectangle2D.Double tileRectangle = new Rectangle2D.Double(tile.getX() * TILE_SIZE, tile.getY() * TILE_SIZE, TILE_SIZE, TILE_SIZE);
         Area area = new Area(tileRectangle);
         Rectangle2D.Double theSameRectangle = new Rectangle2D.Double(tile.getX() * TILE_SIZE, tile.getY() * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-        boolean contains = area.contains(theSameRectangle);
-        System.out.println("contains: " + contains);
-        boolean intersects = area.intersects(theSameRectangle);
-        System.out.println("intersects: " + intersects);
-        boolean equals = area.equals(new Area(theSameRectangle));
-        System.out.println("equals: " + equals);
+        assertTrue(area.contains(theSameRectangle));
+        assertTrue(area.intersects(theSameRectangle));
+        assertTrue(area.equals(new Area(theSameRectangle)));
     }
 
     @Test
@@ -31,11 +29,8 @@ public class AreaTest {
         Rectangle2D.Double tileRectangle = new Rectangle2D.Double(tile.getX() * TILE_SIZE, tile.getY() * TILE_SIZE, TILE_SIZE, TILE_SIZE);
         Area area = new Area(tileRectangle);
         Rectangle2D.Double halfRectangle = new Rectangle2D.Double(tile.getX() * TILE_SIZE, tile.getY() * TILE_SIZE, TILE_SIZE, TILE_SIZE / 2);
-        boolean contains = area.contains(halfRectangle);
-        System.out.println("contains: " + contains);
-        boolean intersects = area.intersects(halfRectangle);
-        System.out.println("intersects: " + intersects);
-        boolean equals = area.equals(new Area(halfRectangle));
-        System.out.println("equals: " + equals);
+        assertTrue(area.contains(halfRectangle));
+        assertTrue(area.intersects(halfRectangle));
+        assertFalse(area.equals(new Area(halfRectangle)));
     }
 }
