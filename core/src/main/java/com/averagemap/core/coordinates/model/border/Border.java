@@ -10,13 +10,15 @@ public class Border {
 
     private final MultiPolygon<LatLng> multiPolygon;
 
-    public Border(MultiPolygon<LatLng> multiPolygon) {
+    private final ZoomSpecificBorderFactory zoomSpecificBorderFactory;
+
+    public Border(MultiPolygon<LatLng> multiPolygon, ZoomSpecificBorderFactory zoomSpecificBorderFactory) {
         this.multiPolygon = multiPolygon;
+        this.zoomSpecificBorderFactory = zoomSpecificBorderFactory;
     }
 
     public ZoomSpecificBorder createForZoom(int zoom) {
-        MultiPolygon<GoogleMapsPosition> zoomSpecificMultiPolygon = removeDuplicatePositions(latLngToPosition(multiPolygon, zoom));
-        return new ZoomSpecificBorder(zoomSpecificMultiPolygon);
+        return zoomSpecificBorderFactory.createZoomSpecificBorder(removeDuplicatePositions(latLngToPosition(multiPolygon, zoom)));
     }
 
     private MultiPolygon<GoogleMapsPosition> removeDuplicatePositions(MultiPolygon<GoogleMapsPosition> multiPolygon) {

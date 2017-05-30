@@ -16,13 +16,8 @@ import com.averagemap.core.valueCalculator.factory.PointValueCalculatorFactory;
 import javafx.util.Pair;
 
 import java.awt.*;
-import java.awt.geom.Area;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Path2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
-import java.util.List;
 
 import static com.averagemap.core.coordinates.CoordinatesUtils.TILE_SIZE;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
@@ -44,7 +39,6 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
         TilesArea tilesArea = zoomSpecificBorder.getEncompassingArea();
         Pair<Double, Double> minAndMaxValue = countMinAndMaxValue(points);
         pointValueCalculatorFactory.setUp(points);
-//        GeneralPath outlinePath = createOutline(zoomSpecificBorder);
         zoomSpecificBorder.prepareForPlotting();
         tilesArea.stream()
                 .parallel()
@@ -55,17 +49,16 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
                 });
     }
 
-    private BufferedImage drawImage(GoogleMapsTile tile, Collection<Point<GoogleMapsPosition>> uniquePoints, ZoomSpecificBorder zoomSpecificBorder, Pair<Double, Double> minAndMaxValue) {
+    private BufferedImage drawImage(GoogleMapsTile tile, Collection<Point<GoogleMapsPosition>> points, ZoomSpecificBorder zoomSpecificBorder, Pair<Double, Double> minAndMaxValue) {
         BufferedImage image = new BufferedImage(TILE_SIZE, TILE_SIZE, TYPE_INT_ARGB);
         Graphics2D graphics2D = drawEmptySquare(image);
-//        BorderInTile drawingArea = null;//getDrawingArea(tile, zoomSpecificBorder);
         BorderInTile borderInTile = zoomSpecificBorder.cropToTile(tile);
         SquareFillingStrategy squareFillingStrategy = pickStrategy(tile, borderInTile);
         squareFillingStrategy.fill(tile,
                 pointValueCalculatorFactory,
                 (PointValueCalculator pointValueCalculator, GoogleMapsPosition pixelPosition) -> drawPixel(image, pointValueCalculator, pixelPosition, minAndMaxValue),
                 (GoogleMapsPosition pixelPosition) -> shouldDraw(borderInTile, pixelPosition));
-        drawPointsAsPixels(tile, uniquePoints, graphics2D);
+//        drawPointsAsPixels(tile, points, graphics2D);
         return image;
     }
 
@@ -74,12 +67,6 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
         graphics2D.setPaint(new Color(0f, 0f, 0f, 0f));
         graphics2D.fillRect(0, 0, image.getWidth(), image.getHeight());
         return graphics2D;
-    }
-
-    private Area getDrawingArea(GoogleMapsTile tile, GeneralPath outlinePath) {
-        Area drawingArea = new Area(outlinePath);
-        drawingArea.intersect(new Area(new Rectangle2D.Double(tile.getX() * TILE_SIZE, tile.getY() * TILE_SIZE, TILE_SIZE, TILE_SIZE)));
-        return drawingArea;
     }
 
     private void drawPointsAsPixels(GoogleMapsTile tile, Collection<Point<GoogleMapsPosition>> uniquePoints, Graphics2D graphics2D) {
@@ -108,7 +95,6 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
     }
 
     private boolean shouldDraw(BorderInTile borderInTile, GoogleMapsPosition pixelPosition) {
-//        return outlinePath.contains(pixelPosition.getX(), pixelPosition.getY());
         return borderInTile.contains(pixelPosition);
     }
 
@@ -118,15 +104,6 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
         Color color = colorCalculator.calculate(averageValue, minAndMaxValue);
         image.setRGB(position.getX(), position.getY(), color.getRGB());
         return null;
-    }
-
-    private GeneralPath createOutline(List<GoogleMapsPosition> outline) {
-        GeneralPath clip = new GeneralPath(Path2D.WIND_EVEN_ODD);
-        GoogleMapsPosition first = outline.get(0);
-        clip.moveTo(first.getX(), first.getY());
-        outline.forEach(position -> clip.lineTo(position.getX(), position.getY()));
-        clip.closePath();
-        return clip;
     }
 
     private Pair<Double, Double> countMinAndMaxValue(Collection<Point<GoogleMapsPosition>> points) {

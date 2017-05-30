@@ -1,10 +1,8 @@
 package com.averagemap.core;
 
 import com.averagemap.core.coordinates.model.GoogleMapsTile;
-import com.averagemap.core.coordinates.model.border.Border;
-import com.averagemap.core.coordinates.model.border.BorderInTile;
-import com.averagemap.core.coordinates.model.border.JacksonConverter;
-import com.averagemap.core.coordinates.model.border.ZoomSpecificBorder;
+import com.averagemap.core.coordinates.model.border.*;
+import com.averagemap.core.coordinates.model.border.javaGeomImpl.JavaGeomZoomSpecificBorderFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.geojson.FeatureCollection;
 import org.geojson.GeoJsonObject;
@@ -94,7 +92,8 @@ public class BorderTest {
         File file = new File(classLoader.getResource("cz.json").getFile());
         FeatureCollection featureCollection = new ObjectMapper().readValue(file, FeatureCollection.class);
         GeoJsonObject geometry = featureCollection.getFeatures().get(0).getGeometry();
-        return new JacksonConverter().convert((MultiPolygon) geometry);
+        ZoomSpecificBorderFactory zoomSpecificBorderFactory = new JavaGeomZoomSpecificBorderFactory();
+        return new JacksonConverter(zoomSpecificBorderFactory).convert((MultiPolygon) geometry);
     }
 
     private Border loadFranceBorder() throws IOException {
@@ -102,6 +101,7 @@ public class BorderTest {
         File file = new File(classLoader.getResource("fr.json").getFile());
         FeatureCollection featureCollection = new ObjectMapper().readValue(file, FeatureCollection.class);
         GeoJsonObject geometry = featureCollection.getFeatures().get(0).getGeometry();
-        return new JacksonConverter().convert((MultiPolygon) geometry);
+        ZoomSpecificBorderFactory zoomSpecificBorderFactory = new JavaGeomZoomSpecificBorderFactory();
+        return new JacksonConverter(zoomSpecificBorderFactory).convert((MultiPolygon) geometry);
     }
 }

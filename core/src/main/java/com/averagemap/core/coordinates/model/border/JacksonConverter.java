@@ -9,6 +9,12 @@ import static java.util.stream.Collectors.toList;
 
 public class JacksonConverter {
 
+    private final ZoomSpecificBorderFactory zoomSpecificBorderFactory;
+
+    public JacksonConverter(ZoomSpecificBorderFactory zoomSpecificBorderFactory) {
+        this.zoomSpecificBorderFactory = zoomSpecificBorderFactory;
+    }
+
     public Border convert(org.geojson.MultiPolygon geoJsonMultiPolygon) {
         List<Polygon<LatLng>> polygons = new ArrayList<>();
         geoJsonMultiPolygon.getCoordinates().forEach(geoJsonPolygon -> {
@@ -29,6 +35,6 @@ public class JacksonConverter {
             });
         });
         MultiPolygon<LatLng> multipolygon = new MultiPolygon<>(polygons);
-        return new Border(multipolygon);
+        return new Border(multipolygon, zoomSpecificBorderFactory);
     }
 }

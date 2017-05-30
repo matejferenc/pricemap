@@ -10,6 +10,8 @@ import com.averagemap.core.coordinates.model.LatLng;
 import com.averagemap.core.coordinates.model.Point;
 import com.averagemap.core.coordinates.model.border.Border;
 import com.averagemap.core.coordinates.model.border.JacksonConverter;
+import com.averagemap.core.coordinates.model.border.ZoomSpecificBorderFactory;
+import com.averagemap.core.coordinates.model.border.javaGeomImpl.JavaGeomZoomSpecificBorderFactory;
 import com.averagemap.core.duplicate.AverageResultDuplicateRemover;
 import com.averagemap.core.duplicate.DuplicateRemover;
 import com.averagemap.core.duplicate.SimpleDuplicateRemover;
@@ -98,7 +100,8 @@ public class DataPlotterImplTest {
         File file = new File(classLoader.getResource("cz.json").getFile());
         FeatureCollection featureCollection = new ObjectMapper().readValue(file, FeatureCollection.class);
         GeoJsonObject geometry = featureCollection.getFeatures().get(0).getGeometry();
-        return new JacksonConverter().convert((MultiPolygon) geometry);
+        ZoomSpecificBorderFactory zoomSpecificBorderFactory = new JavaGeomZoomSpecificBorderFactory();
+        return new JacksonConverter(zoomSpecificBorderFactory).convert((MultiPolygon) geometry);
     }
 
     private Border loadFrenchBorder() throws IOException {
@@ -106,7 +109,8 @@ public class DataPlotterImplTest {
         File file = new File(classLoader.getResource("fr.json").getFile());
         FeatureCollection featureCollection = new ObjectMapper().readValue(file, FeatureCollection.class);
         GeoJsonObject geometry = featureCollection.getFeatures().get(0).getGeometry();
-        return new JacksonConverter().convert((MultiPolygon) geometry);
+        ZoomSpecificBorderFactory zoomSpecificBorderFactory = new JavaGeomZoomSpecificBorderFactory();
+        return new JacksonConverter(zoomSpecificBorderFactory).convert((MultiPolygon) geometry);
     }
 
     @Test
