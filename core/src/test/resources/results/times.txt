@@ -5,9 +5,9 @@ Zoom 3 execution time: 0 seconds
 Zoom 4 execution time: 0 seconds
 Zoom 5 execution time: 1 seconds
 Zoom 6 execution time: 2 seconds
-Zoom 7 execution time: 8 seconds
-Zoom 8 execution time: 17 seconds
-Zoom 9 execution time: 32 seconds
-Zoom 10 execution time: 45 seconds
-Zoom 11 execution time: 86 seconds
-Zoom 12 execution time: 215 seconds
+Zoom 7 execution time: 6 seconds
+Zoom 8 execution time: 11 seconds
+Zoom 9 execution time: 20 seconds
+Zoom 10 execution time: 33 seconds
+Zoom 11 execution time: 63 seconds
+Zoom 12 execution time: 169 seconds
