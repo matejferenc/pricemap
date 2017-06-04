@@ -254,17 +254,12 @@ public class FastPriorityQueue<E> extends AbstractQueue<E> implements java.io.Se
      * @throws NullPointerException if the specified element is null
      */
     public boolean offer(E e) {
-        if (e == null)
-            throw new NullPointerException();
-        modCount++;
         int i = size;
-        if (i >= queue.length)
-            grow(i + 1);
         size = i + 1;
         if (i == 0)
             queue[0] = e;
         else
-            siftUp(i, e);
+            siftUpUsingComparator(i, e);
         return true;
     }
 
@@ -507,15 +502,12 @@ public class FastPriorityQueue<E> extends AbstractQueue<E> implements java.io.Se
 
     @SuppressWarnings("unchecked")
     public E poll() {
-        if (size == 0)
-            return null;
         int s = --size;
-        modCount++;
         E result = (E) queue[0];
         E x = (E) queue[s];
         queue[s] = null;
         if (s != 0)
-            siftDown(0, x);
+            siftDownUsingComparator(0, x);
         return result;
     }
 
@@ -623,6 +615,10 @@ public class FastPriorityQueue<E> extends AbstractQueue<E> implements java.io.Se
             if (right < size &&
                 ((Comparable<? super E>) c).compareTo((E) queue[right]) > 0)
                 c = queue[child = right];
+            right = child + 2;
+            if (right < size &&
+                    ((Comparable<? super E>) c).compareTo((E) queue[right]) > 0)
+                c = queue[child = right];
             if (key.compareTo((E) c) <= 0)
                 break;
             queue[k] = c;
@@ -640,6 +636,10 @@ public class FastPriorityQueue<E> extends AbstractQueue<E> implements java.io.Se
             int right = child + 1;
             if (right < size &&
                 comparator.compare((E) c, (E) queue[right]) > 0)
+                c = queue[child = right];
+            right = child + 2;
+            if (right < size &&
+                    comparator.compare((E) c, (E) queue[right]) > 0)
                 c = queue[child = right];
             if (comparator.compare(x, (E) c) <= 0)
                 break;

@@ -55,37 +55,8 @@ public class InverseDistanceWeighting implements PointValueCalculator {
             }
         }
 
-
-
-        PriorityQueue<Pair<Double, Double>> oldClosestPoints = new PriorityQueue<>((Pair<Double, Double> o1, Pair<Double, Double> o2) -> o2.getKey().compareTo(o1.getKey()));
-        points.forEach(point -> {
-            double distance = this.distance.distance(point.getPosition(), pixelPosition);
-            if (new Double(distance).equals(Double.NaN)) {
-                return;
-            }
-            if (oldClosestPoints.size() >= K) {
-                if (oldClosestPoints.peek().getKey() > distance) {
-                    oldClosestPoints.poll();
-                    oldClosestPoints.add(new Pair<>(distance, point.getValue()));
-                }
-            } else {
-                oldClosestPoints.add(new Pair<>(distance, point.getValue()));
-            }
-        });
-
-        closestPoints.stream()
-                .sorted((Pair<Double, Double> o1, Pair<Double, Double> o2) -> o2.getKey().compareTo(o1.getKey()))
-                .forEach(pair -> System.out.print(pair.getKey() + ", "));
-        System.out.println();
-        oldClosestPoints.stream()
-                .sorted((Pair<Double, Double> o1, Pair<Double, Double> o2) -> o2.getKey().compareTo(o1.getKey()))
-                .forEach(pair -> System.out.print(pair.getKey() + ", "));
-        System.out.println();
-        System.out.println("-------------------");
-
-
-        double sumOfWeights = oldClosestPoints.stream().mapToDouble(pair -> 1 / pair.getKey()).sum();
-        return oldClosestPoints.stream()
+        double sumOfWeights = closestPoints.stream().mapToDouble(pair -> 1 / pair.getKey()).sum();
+        return closestPoints.stream()
                 .mapToDouble(pair -> (1 / pair.getKey()) * pair.getValue())
                 .sum() / sumOfWeights;
     }
