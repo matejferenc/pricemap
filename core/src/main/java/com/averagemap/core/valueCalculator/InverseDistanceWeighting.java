@@ -1,6 +1,5 @@
 package com.averagemap.core.valueCalculator;
 
-import com.averagemap.core.FastPriorityQueue;
 import com.averagemap.core.coordinates.distance.Distance;
 import com.averagemap.core.coordinates.model.GoogleMapsPosition;
 import com.averagemap.core.coordinates.model.Point;
@@ -9,6 +8,7 @@ import javafx.util.Pair;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class InverseDistanceWeighting implements PointValueCalculator {
 
@@ -55,8 +55,37 @@ public class InverseDistanceWeighting implements PointValueCalculator {
             }
         }
 
-        double sumOfWeights = closestPoints.stream().mapToDouble(pair -> 1 / pair.getKey()).sum();
-        return closestPoints.stream()
+
+
+        PriorityQueue<Pair<Double, Double>> oldClosestPoints = new PriorityQueue<>((Pair<Double, Double> o1, Pair<Double, Double> o2) -> o2.getKey().compareTo(o1.getKey()));
+        points.forEach(point -> {
+            double distance = this.distance.distance(point.getPosition(), pixelPosition);
+            if (new Double(distance).equals(Double.NaN)) {
+                return;
+            }
+            if (oldClosestPoints.size() >= K) {
+                if (oldClosestPoints.peek().getKey() > distance) {
+                    oldClosestPoints.poll();
+                    oldClosestPoints.add(new Pair<>(distance, point.getValue()));
+                }
+            } else {
+                oldClosestPoints.add(new Pair<>(distance, point.getValue()));
+            }
+        });
+
+        closestPoints.stream()
+                .sorted((Pair<Double, Double> o1, Pair<Double, Double> o2) -> o2.getKey().compareTo(o1.getKey()))
+                .forEach(pair -> System.out.print(pair.getKey() + ", "));
+        System.out.println();
+        oldClosestPoints.stream()
+                .sorted((Pair<Double, Double> o1, Pair<Double, Double> o2) -> o2.getKey().compareTo(o1.getKey()))
+                .forEach(pair -> System.out.print(pair.getKey() + ", "));
+        System.out.println();
+        System.out.println("-------------------");
+
+
+        double sumOfWeights = oldClosestPoints.stream().mapToDouble(pair -> 1 / pair.getKey()).sum();
+        return oldClosestPoints.stream()
                 .mapToDouble(pair -> (1 / pair.getKey()) * pair.getValue())
                 .sum() / sumOfWeights;
     }
