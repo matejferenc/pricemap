@@ -12,7 +12,7 @@ import com.averagemap.core.generator.filling.SquareFillingStrategy;
 import com.averagemap.core.images.ImageTile;
 import com.averagemap.core.images.ImageTileSaver;
 import com.averagemap.core.valueCalculator.PointValueCalculator;
-import com.averagemap.core.valueCalculator.factory.PointValueCalculatorFactory;
+import com.averagemap.core.valueCalculator.PointValueCalculatorFactory;
 import javafx.util.Pair;
 
 import java.awt.*;
