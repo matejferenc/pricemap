@@ -15,21 +15,23 @@ import static java.util.stream.Collectors.toList;
 
 public class DataPlotterImpl implements DataPlotter {
 
-    private SingleZoomDataPlotter singleZoomDataPlotter;
-    private DuplicateRemover<Integer, GoogleMapsPosition> duplicatePointRemover;
-    private int maxZoom;
+    private final SingleZoomDataPlotter singleZoomDataPlotter;
+    private final DuplicateRemover<Integer, GoogleMapsPosition> duplicatePointRemover;
+    private final int minZoom;
+    private final int maxZoom;
 
     public DataPlotterImpl(SingleZoomDataPlotter singleZoomDataPlotter,
                            DuplicateRemover<Integer, GoogleMapsPosition> duplicatePointRemover,
-                           int maxZoom) {
+                           int minZoom, int maxZoom) {
         this.singleZoomDataPlotter = singleZoomDataPlotter;
         this.duplicatePointRemover = duplicatePointRemover;
+        this.minZoom = minZoom;
         this.maxZoom = maxZoom;
     }
 
     @Override
     public void plot(Collection<Point<LatLng>> points, Border border) {
-        IntStream.rangeClosed(0, maxZoom)
+        IntStream.rangeClosed(minZoom, maxZoom)
                 .forEach(zoom -> {
                     long start = System.currentTimeMillis();
                     generateImageTilesForOneZoom(points, border, zoom);

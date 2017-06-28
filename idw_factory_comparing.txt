@@ -1,0 +1,116 @@
+FR altitude - pixel rings factory - pixel rings weighting
+Zoom 0 execution time: 1 seconds
+Zoom 1 execution time: 2 seconds
+Zoom 2 execution time: 1 seconds
+Zoom 3 execution time: 1 seconds
+Zoom 4 execution time: 2 seconds
+Zoom 5 execution time: 28 seconds
+Zoom 6 execution time: 104 seconds
+Zoom 7 execution time: 144 seconds
+Zoom 8 execution time: 94 seconds
+Zoom 9 execution time: 176 seconds
+Zoom 10 execution time: 945 seconds
+Zoom 11 execution time: 6618 seconds
+
+
+FR altitude - tile rings factory - standard weighting
+Zoom 0 execution time: 0 seconds
+Zoom 1 execution time: 0 seconds
+Zoom 2 execution time: 0 seconds
+Zoom 3 execution time: 2 seconds
+Zoom 4 execution time: 10 seconds
+Zoom 5 execution time: 108 seconds
+Zoom 6 execution time: 696 seconds
+Zoom 7 execution time: 970 seconds
+Zoom 8 execution time: 766 seconds
+Zoom 9 execution time: 606 seconds
+Zoom 10 execution time: 570 seconds
+Zoom 11 execution time: 818 seconds
+
+
+FR altitude - pixel rings factory - standard weighting
+Zoom 0 execution time: 2 seconds
+Zoom 1 execution time: 1 seconds
+Zoom 2 execution time: 1 seconds
+Zoom 3 execution time: 1 seconds
+Zoom 4 execution time: 1 seconds
+Zoom 5 execution time: 23 seconds
+Zoom 6 execution time: 144 seconds
+Zoom 7 execution time: 578 seconds
+Zoom 8 execution time: 378 seconds
+Zoom 9 execution time: 315 seconds
+Zoom 10 execution time: 415 seconds
+Zoom 11 execution time: 853 seconds
+
+
+FR altitude - tile rings factory - standard weighting
+Zoom 0 execution time: 0 seconds
+Zoom 1 execution time: 0 seconds
+Zoom 2 execution time: 0 seconds
+Zoom 3 execution time: 2 seconds
+Zoom 4 execution time: 11 seconds
+Zoom 5 execution time: 95 seconds
+Zoom 6 execution time: 640 seconds
+Zoom 7 execution time: 789 seconds
+Zoom 8 execution time: 630 seconds
+Zoom 9 execution time: 460 seconds
+Zoom 10 execution time: 878 seconds
+
+
+CZ flats - pixel rings factory - pixel rings weighting
+Zoom 0 execution time: 1 seconds
+Zoom 1 execution time: 1 seconds
+Zoom 2 execution time: 1 seconds
+Zoom 3 execution time: 1 seconds
+Zoom 4 execution time: 0 seconds
+Zoom 5 execution time: 2 seconds
+Zoom 6 execution time: 3 seconds
+Zoom 7 execution time: 5 seconds
+Zoom 8 execution time: 15 seconds
+Zoom 9 execution time: 85 seconds
+Zoom 10 execution time: 1029 seconds
+
+
+CZ flats - tile rings factory - standard weighting
+Zoom 0 execution time: 0 seconds
+Zoom 1 execution time: 0 seconds
+Zoom 2 execution time: 0 seconds
+Zoom 3 execution time: 0 seconds
+Zoom 4 execution time: 0 seconds
+Zoom 5 execution time: 1 seconds
+Zoom 6 execution time: 2 seconds
+Zoom 7 execution time: 5 seconds
+Zoom 8 execution time: 11 seconds
+Zoom 9 execution time: 18 seconds
+Zoom 10 execution time: 28 seconds
+Zoom 11 execution time: 55 seconds
+Zoom 12 execution time: 135 seconds
+
+
+CZ flats - pixel rings factory - standard weighting
+Zoom 0 execution time: 1 seconds
+Zoom 1 execution time: 1 seconds
+Zoom 2 execution time: 1 seconds
+Zoom 3 execution time: 0 seconds
+Zoom 4 execution time: 0 seconds
+Zoom 5 execution time: 1 seconds
+Zoom 6 execution time: 3 seconds
+Zoom 7 execution time: 6 seconds
+Zoom 8 execution time: 13 seconds
+Zoom 9 execution time: 24 seconds
+Zoom 10 execution time: 83 seconds
+Zoom 11 execution time: 499 seconds
+
+
+CZ flats - tile rings factory - pixel rings weighting
+Zoom 0 execution time: 0 seconds
+Zoom 1 execution time: 0 seconds
+Zoom 2 execution time: 0 seconds
+Zoom 3 execution time: 0 seconds
+Zoom 4 execution time: 0 seconds
+Zoom 5 execution time: 1 seconds
+Zoom 6 execution time: 1 seconds
+Zoom 7 execution time: 3 seconds
+Zoom 8 execution time: 10 seconds
+Zoom 9 execution time: 72 seconds
+Zoom 10 execution time: 918 seconds

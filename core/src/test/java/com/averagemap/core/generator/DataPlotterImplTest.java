@@ -47,11 +47,12 @@ public class DataPlotterImplTest {
         Distance distance;
 //        distance = new NewYorkDistance();
         distance = new EuclidDistance();
-        PointValueCalculatorFactory pointValueCalculatorFactory = new PixelRingsInverseDistanceWeightingFactory(distance);
+        PointValueCalculatorFactory pointValueCalculatorFactory = new TileRingsInverseDistanceWeightingFactory(distance);
         ColorCalculator colorCalculator = new AbsoluteValueLevelColorCalculator();
         SingleZoomDataPlotter zoomSpecificDataPlotter = new SingleZoomDataPlotterImpl(imageTileSaver, pointValueCalculatorFactory, colorCalculator);
         int maxZoom = 12;
-        DataPlotterImpl dataPlotterImpl = new DataPlotterImpl(zoomSpecificDataPlotter, duplicatePointRemover, maxZoom);
+        int minZoom = 0;
+        DataPlotterImpl dataPlotterImpl = new DataPlotterImpl(zoomSpecificDataPlotter, duplicatePointRemover, minZoom, maxZoom);
         Border border = loadCzechRepublicBorder();
         dataPlotterImpl.plot(loadData(), border);
     }
@@ -66,22 +67,24 @@ public class DataPlotterImplTest {
         ColorCalculator colorCalculator = new AbsoluteValueLevelColorCalculator();
         SingleZoomDataPlotter zoomSpecificDataPlotter = new SingleZoomDataPlotterImpl(imageTileSaver, pointValueCalculatorFactory, colorCalculator);
         int maxZoom = 6;
-        DataPlotterImpl dataPlotterImpl = new DataPlotterImpl(zoomSpecificDataPlotter, duplicatePointRemover, maxZoom);
+        int minZoom = 0;
+        DataPlotterImpl dataPlotterImpl = new DataPlotterImpl(zoomSpecificDataPlotter, duplicatePointRemover, minZoom, maxZoom);
         Border border = loadFrenchBorder();
         dataPlotterImpl.plot(loadFrData(), border);
     }
 
     @Test
-    public void testFrAltitude() throws IOException {
+    public void  testFrAltitude() throws IOException {
         DuplicateRemover<Integer, GoogleMapsPosition> duplicatePointRemover = new AverageResultDuplicateRemover<>();
         ImageTileSaver imageTileSaver = new ImageTileSaver(new File(new File(this.getClass().getResource("/demo/index.html").getPath()).getParent() + "/img"));
         Distance distance;
         distance = new EuclidDistance();
-        PointValueCalculatorFactory pointValueCalculatorFactory = new PixelRingsInverseDistanceWeightingFactory(distance);
+        PointValueCalculatorFactory pointValueCalculatorFactory = new TileRingsInverseDistanceWeightingFactory(distance);
         ColorCalculator colorCalculator = new AbsoluteValueLevelColorCalculator();
         SingleZoomDataPlotter zoomSpecificDataPlotter = new SingleZoomDataPlotterImpl(imageTileSaver, pointValueCalculatorFactory, colorCalculator);
-        int maxZoom = 10;
-        DataPlotterImpl dataPlotterImpl = new DataPlotterImpl(zoomSpecificDataPlotter, duplicatePointRemover, maxZoom);
+        int maxZoom = 12;
+        int minZoom = 0;
+        DataPlotterImpl dataPlotterImpl = new DataPlotterImpl(zoomSpecificDataPlotter, duplicatePointRemover, minZoom, maxZoom);
         Border border = loadFrenchBorder();
         dataPlotterImpl.plot(loadFrData2(), border);
     }
