@@ -4,10 +4,12 @@ import com.averagemap.core.coordinates.model.GoogleMapsPosition;
 import com.averagemap.core.coordinates.model.GoogleMapsTile;
 
 public interface BorderInTile {
+    
+    GoogleMapsTile getTile();
 
-    boolean isFull(GoogleMapsTile tile);
+    boolean isFull();
 
-    boolean isEmpty(GoogleMapsTile tile);
+    boolean isEmpty();
 
     boolean contains(GoogleMapsPosition pixelPosition);
 

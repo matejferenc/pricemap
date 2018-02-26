@@ -102,7 +102,7 @@ public class JavaGeomZoomSpecificBorder implements ZoomSpecificBorder {
     public BorderInTile cropToTile(GoogleMapsTile tile) {
         Rectangle2D.Double tileRectangle = new Rectangle2D.Double(tile.getX() * TILE_SIZE, tile.getY() * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 
-        return new JavaGeomBorderInTile(newMultiPolygon(pathMultiPolygon.pathPolygons.stream()
+        return new JavaGeomBorderInTile(tile, newMultiPolygon(pathMultiPolygon.pathPolygons.stream()
                 .filter(pathPolygon -> pathPolygon.exteriorRing.intersects(tileRectangle) || pathPolygon.exteriorRing.contains(tileRectangle))
                 .map(pathPolygon -> {
                     Area exteriorRingArea = new Area(pathPolygon.exteriorRing);

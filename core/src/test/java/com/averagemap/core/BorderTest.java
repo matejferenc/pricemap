@@ -24,18 +24,18 @@ public class BorderTest {
 
         GoogleMapsTile tile = new GoogleMapsTile(136, 85, 8);
         BorderInTile borderInTile = zoomSpecificBorder.cropToTile(tile);
-        assertFalse(borderInTile.isFull(tile));
-        assertTrue(borderInTile.isEmpty(tile));
+        assertFalse(borderInTile.isFull());
+        assertTrue(borderInTile.isEmpty());
 
         tile = new GoogleMapsTile(137, 85, 8);
         borderInTile = zoomSpecificBorder.cropToTile(tile);
-        assertFalse(borderInTile.isFull(tile));
-        assertFalse(borderInTile.isEmpty(tile));
+        assertFalse(borderInTile.isFull());
+        assertFalse(borderInTile.isEmpty());
 
         tile = new GoogleMapsTile(138, 86, 8);
         borderInTile = zoomSpecificBorder.cropToTile(tile);
-        assertTrue(borderInTile.isFull(tile));
-        assertFalse(borderInTile.isEmpty(tile));
+        assertTrue(borderInTile.isFull());
+        assertFalse(borderInTile.isEmpty());
     }
 
     @Test
@@ -45,18 +45,18 @@ public class BorderTest {
 
         GoogleMapsTile tile = new GoogleMapsTile(550, 343, 10);
         BorderInTile borderInTile = zoomSpecificBorder.cropToTile(tile);
-        assertFalse(borderInTile.isFull(tile));
-        assertTrue(borderInTile.isEmpty(tile));
+        assertFalse(borderInTile.isFull());
+        assertTrue(borderInTile.isEmpty());
 
         tile = new GoogleMapsTile(550, 344, 10);
         borderInTile = zoomSpecificBorder.cropToTile(tile);
-        assertFalse(borderInTile.isFull(tile));
-        assertFalse(borderInTile.isEmpty(tile));
+        assertFalse(borderInTile.isFull());
+        assertFalse(borderInTile.isEmpty());
 
         tile = new GoogleMapsTile(552, 344, 10);
         borderInTile = zoomSpecificBorder.cropToTile(tile);
-        assertTrue(borderInTile.isFull(tile));
-        assertFalse(borderInTile.isEmpty(tile));
+        assertTrue(borderInTile.isFull());
+        assertFalse(borderInTile.isEmpty());
     }
 
     @Test
@@ -66,20 +66,20 @@ public class BorderTest {
         ZoomSpecificBorder zoomSpecificBorder = border.createForZoom(8);
         GoogleMapsTile tile = new GoogleMapsTile(129, 94, 8);
         BorderInTile borderInTile = zoomSpecificBorder.cropToTile(tile);
-        assertFalse(borderInTile.isFull(tile));
-        assertFalse(borderInTile.isEmpty(tile));
+        assertFalse(borderInTile.isFull());
+        assertFalse(borderInTile.isEmpty());
 
         zoomSpecificBorder = border.createForZoom(13);
         tile = new GoogleMapsTile(4141, 3027, 13);
         borderInTile = zoomSpecificBorder.cropToTile(tile);
-        assertFalse(borderInTile.isFull(tile));
-        assertFalse(borderInTile.isEmpty(tile));
+        assertFalse(borderInTile.isFull());
+        assertFalse(borderInTile.isEmpty());
 
         zoomSpecificBorder = border.createForZoom(15);
         tile = new GoogleMapsTile(16563, 12107, 15);
         borderInTile = zoomSpecificBorder.cropToTile(tile);
-        assertFalse(borderInTile.isFull(tile));
-        assertTrue(borderInTile.isEmpty(tile));
+        assertFalse(borderInTile.isFull());
+        assertTrue(borderInTile.isEmpty());
     }
 
     private Border loadCzechRepublicBorder() throws IOException {

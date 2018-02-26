@@ -10,14 +10,21 @@ import java.util.List;
 
 class JavaGeomBorderInTile implements BorderInTile {
 
+    private GoogleMapsTile tile;
     private MultiPolygonInTile multiPolygonInTile;
 
-    JavaGeomBorderInTile(MultiPolygonInTile multiPolygonInTile) {
+    JavaGeomBorderInTile(GoogleMapsTile tile, MultiPolygonInTile multiPolygonInTile) {
+        this.tile = tile;
         this.multiPolygonInTile = multiPolygonInTile;
     }
 
     @Override
-    public boolean isFull(GoogleMapsTile tile) {
+    public GoogleMapsTile getTile() {
+        return tile;
+    }
+
+    @Override
+    public boolean isFull() {
         return multiPolygonInTile.getPolygons().stream()
                 .anyMatch(polygonInTile ->
                         polygonInTile.getExteriorRing().equals(CoordinatesUtils.toArea(tile))
@@ -29,7 +36,7 @@ class JavaGeomBorderInTile implements BorderInTile {
     }
 
     @Override
-    public boolean isEmpty(GoogleMapsTile tile) {
+    public boolean isEmpty() {
         return multiPolygonInTile.getPolygons().isEmpty() || multiPolygonInTile.getPolygons().stream()
                 .anyMatch(polygonInTile ->
                         polygonInTile.getExteriorRing().isEmpty()

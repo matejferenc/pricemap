@@ -52,7 +52,7 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
         BufferedImage image = new BufferedImage(TILE_SIZE, TILE_SIZE, TYPE_INT_ARGB);
         Graphics2D graphics2D = drawEmptySquare(image);
         BorderInTile borderInTile = zoomSpecificBorder.cropToTile(tile);
-        SquareFillingStrategy squareFillingStrategy = pickStrategy(tile, borderInTile);
+        SquareFillingStrategy squareFillingStrategy = pickStrategy(borderInTile);
         squareFillingStrategy.fill(tile,
                 pointValueCalculatorFactory,
                 (PointValueCalculator pointValueCalculator, GoogleMapsPosition pixelPosition) -> drawPixel(image, pointValueCalculator, pixelPosition, minAndMaxValue),
@@ -83,10 +83,10 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
                 });
     }
 
-    private SquareFillingStrategy pickStrategy(GoogleMapsTile tile, BorderInTile zoomSpecificBorder) {
-        if (zoomSpecificBorder.isFull(tile)) {
+    private SquareFillingStrategy pickStrategy(BorderInTile borderInTile) {
+        if (borderInTile.isFull()) {
             return new FullSquareFillingStrategy();
-        } else if (zoomSpecificBorder.isEmpty(tile)) {
+        } else if (borderInTile.isEmpty()) {
             return new EmptySquareFillingStrategy();
         } else {
             return new DefaultSquareFillingStrategy();
