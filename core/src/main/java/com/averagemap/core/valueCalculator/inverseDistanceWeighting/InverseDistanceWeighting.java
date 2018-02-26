@@ -34,7 +34,7 @@ public class InverseDistanceWeighting implements PointValueCalculator {
             }
         }
 
-        FastPriorityQueue<Pair<Double, Double>> closestPoints = new FastPriorityQueue<>(K + 1, (Pair<Double, Double> o1, Pair<Double, Double> o2) -> o2.getKey().compareTo(o1.getKey()));
+        PriorityQueue<Pair<Double, Double>> closestPoints = new PriorityQueue<>(K, (Pair<Double, Double> o1, Pair<Double, Double> o2) -> o2.getKey().compareTo(o1.getKey()));
 
         for(int i = 0; i < K; i++) {
             Point<GoogleMapsPosition> point = points.get(i);

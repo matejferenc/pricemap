@@ -7,8 +7,6 @@ public interface ZoomSpecificBorder {
 
     TilesArea getEncompassingArea();
 
-    void prepareForPlotting();
-
     BorderInTile cropToTile(GoogleMapsTile tile);
 
 }

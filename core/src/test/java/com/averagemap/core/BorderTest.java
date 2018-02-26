@@ -21,7 +21,6 @@ public class BorderTest {
     public void testStrategyForZoom8() throws IOException {
         Border border = loadCzechRepublicBorder();
         ZoomSpecificBorder zoomSpecificBorder = border.createForZoom(8);
-        zoomSpecificBorder.prepareForPlotting();
 
         GoogleMapsTile tile = new GoogleMapsTile(136, 85, 8);
         BorderInTile borderInTile = zoomSpecificBorder.cropToTile(tile);
@@ -43,7 +42,6 @@ public class BorderTest {
     public void testStrategyForZoom10() throws IOException {
         Border border = loadCzechRepublicBorder();
         ZoomSpecificBorder zoomSpecificBorder = border.createForZoom(10);
-        zoomSpecificBorder.prepareForPlotting();
 
         GoogleMapsTile tile = new GoogleMapsTile(550, 343, 10);
         BorderInTile borderInTile = zoomSpecificBorder.cropToTile(tile);
@@ -66,21 +64,18 @@ public class BorderTest {
         Border border = loadFranceBorder();
 
         ZoomSpecificBorder zoomSpecificBorder = border.createForZoom(8);
-        zoomSpecificBorder.prepareForPlotting();
         GoogleMapsTile tile = new GoogleMapsTile(129, 94, 8);
         BorderInTile borderInTile = zoomSpecificBorder.cropToTile(tile);
         assertFalse(borderInTile.isFull(tile));
         assertFalse(borderInTile.isEmpty(tile));
 
         zoomSpecificBorder = border.createForZoom(13);
-        zoomSpecificBorder.prepareForPlotting();
         tile = new GoogleMapsTile(4141, 3027, 13);
         borderInTile = zoomSpecificBorder.cropToTile(tile);
         assertFalse(borderInTile.isFull(tile));
         assertFalse(borderInTile.isEmpty(tile));
 
         zoomSpecificBorder = border.createForZoom(15);
-        zoomSpecificBorder.prepareForPlotting();
         tile = new GoogleMapsTile(16563, 12107, 15);
         borderInTile = zoomSpecificBorder.cropToTile(tile);
         assertFalse(borderInTile.isFull(tile));
@@ -93,7 +88,7 @@ public class BorderTest {
         FeatureCollection featureCollection = new ObjectMapper().readValue(file, FeatureCollection.class);
         GeoJsonObject geometry = featureCollection.getFeatures().get(0).getGeometry();
         ZoomSpecificBorderFactory zoomSpecificBorderFactory = new JavaGeomZoomSpecificBorderFactory();
-        return new JacksonConverter(zoomSpecificBorderFactory).convert((MultiPolygon) geometry);
+        return new JacksonBorderConverter(zoomSpecificBorderFactory).convert((MultiPolygon) geometry);
     }
 
     private Border loadFranceBorder() throws IOException {
@@ -102,6 +97,6 @@ public class BorderTest {
         FeatureCollection featureCollection = new ObjectMapper().readValue(file, FeatureCollection.class);
         GeoJsonObject geometry = featureCollection.getFeatures().get(0).getGeometry();
         ZoomSpecificBorderFactory zoomSpecificBorderFactory = new JavaGeomZoomSpecificBorderFactory();
-        return new JacksonConverter(zoomSpecificBorderFactory).convert((MultiPolygon) geometry);
+        return new JacksonBorderConverter(zoomSpecificBorderFactory).convert((MultiPolygon) geometry);
     }
 }

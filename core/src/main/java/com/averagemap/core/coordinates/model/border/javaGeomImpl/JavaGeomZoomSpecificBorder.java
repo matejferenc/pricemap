@@ -28,6 +28,17 @@ public class JavaGeomZoomSpecificBorder implements ZoomSpecificBorder {
 
     public JavaGeomZoomSpecificBorder(MultiPolygon<GoogleMapsPosition> zoomSpecificMultiPolygon) {
         this.zoomSpecificMultiPolygon = zoomSpecificMultiPolygon;
+        prepareForPlotting();
+    }
+
+    private void prepareForPlotting() {
+        pathMultiPolygon = new PathMultiPolygon();
+        for (Polygon<GoogleMapsPosition> polygon : zoomSpecificMultiPolygon.getPolygons()) {
+            PathPolygon pathPolygon = new PathPolygon();
+            pathPolygon.exteriorRing = createPathFromRing(polygon.getExteriorRing());
+            polygon.getHoles().forEach(hole -> pathPolygon.holes.add(createPathFromRing(hole)));
+            pathMultiPolygon.pathPolygons.add(pathPolygon);
+        }
     }
 
     @Override
@@ -75,17 +86,6 @@ public class JavaGeomZoomSpecificBorder implements ZoomSpecificBorder {
             throw new IllegalArgumentException("empty");
         }
         return zoom;
-    }
-
-    @Override
-    public void prepareForPlotting() {
-        pathMultiPolygon = new PathMultiPolygon();
-        for (Polygon<GoogleMapsPosition> polygon : zoomSpecificMultiPolygon.getPolygons()) {
-            PathPolygon pathPolygon = new PathPolygon();
-            pathPolygon.exteriorRing = createPathFromRing(polygon.getExteriorRing());
-            polygon.getHoles().forEach(hole -> pathPolygon.holes.add(createPathFromRing(hole)));
-            pathMultiPolygon.pathPolygons.add(pathPolygon);
-        }
     }
 
     private GeneralPath createPathFromRing(LinearRing<GoogleMapsPosition> linearRing) {

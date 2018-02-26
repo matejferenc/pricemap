@@ -89,7 +89,7 @@ public class PixelRingsInverseDistanceWeightingFactory implements PointValueCalc
         final Set<Point<GoogleMapsPosition>> currentRing = new HashSet<>();
         final Set<Point<GoogleMapsPosition>> nextRing = new HashSet<>();
         final Set<Point<GoogleMapsPosition>> temp = new HashSet<>();
-        for (int i = 1; i < 10 * 256; i++) {
+        for (int i = 1; i < 10 * TILE_SIZE; i++) {
             int finalI = i;
             temp.clear();
             nextRing.forEach(point -> {

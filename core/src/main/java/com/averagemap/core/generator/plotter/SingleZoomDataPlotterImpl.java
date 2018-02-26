@@ -39,7 +39,6 @@ public class SingleZoomDataPlotterImpl implements SingleZoomDataPlotter {
         TilesArea tilesArea = zoomSpecificBorder.getEncompassingArea();
         Pair<Double, Double> minAndMaxValue = countMinAndMaxValue(points);
         pointValueCalculatorFactory.setUp(points);
-        zoomSpecificBorder.prepareForPlotting();
         tilesArea.stream()
                 .parallel()
                 .forEach(tile -> {

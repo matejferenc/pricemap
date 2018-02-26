@@ -25,11 +25,11 @@ public class TilesArea {
     }
 
     public int getWidth() {
-        return bottomRight.getX().intValue() - topLeft.getX().intValue() + 1;
+        return bottomRight.getX() - topLeft.getX() + 1;
     }
 
     public int getHeight() {
-        return bottomRight.getY().intValue() - topLeft.getY().intValue() + 1;
+        return bottomRight.getY() - topLeft.getY() + 1;
     }
 
     public Stream<GoogleMapsTile> stream() {

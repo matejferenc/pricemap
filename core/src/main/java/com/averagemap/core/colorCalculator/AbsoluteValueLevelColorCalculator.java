@@ -13,12 +13,12 @@ public class AbsoluteValueLevelColorCalculator implements ColorCalculator {
     private Color c5 = new Color(56, 185, 69);
     private Color c6 = new Color(1, 103, 55);
 
-    private double l1 = 10;
-    private double l2 = 5.5;
-    private double l3 = 4.5;
-    private double l4 = 3.5;
-    private double l5 = 2.5;
-    private double l6 = 1.5;
+    private double l1 = 1500;
+    private double l2 = 1250;
+    private double l3 = 1000;
+    private double l4 = 750;
+    private double l5 = 500;
+    private double l6 = 250;
 
     @Override
     public Color calculate(double value, Pair<Double, Double> minAndMaxValue) {
